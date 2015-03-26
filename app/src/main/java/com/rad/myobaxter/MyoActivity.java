@@ -154,13 +154,15 @@ public abstract class MyoActivity extends Activity {
         count+=1;
 //        if(count > AccelSampleData.SAMPLE_SIZE) {
 //            count = 0;
-        if(count > 2) {
-            List<Vector3Sample> movingAverage = accelSampleData.getMovingAverage();
+
+        List<Vector3Sample> movingAverage = accelSampleData.getSamples();
+        if(movingAverage.size() > 2) {
             Vector3Sample latestMovingAverage = movingAverage.get(movingAverage.size() - 1);
 //        double timePeriod = (double) getOriginalAccel().timeDifference()/1000.0;
 
 //            double timePeriod = (double) (latestMovingAverage.getTimestamp() - accelSampleData.getSampleRangeStartTime()) / 1000.0;
-            double timePeriod = (double) (latestMovingAverage.getTimestamp() - movingAverage.get(movingAverage.size() - 2).getTimestamp()) / 1000.0;
+            long previousMovingAvgTimestamp = movingAverage.get(movingAverage.size() - 2).getTimestamp();
+            double timePeriod = (double) (latestMovingAverage.getTimestamp() - previousMovingAvgTimestamp);
             Log.i(TAG, "Time Period: " + timePeriod);
             Log.i(TAG, "Timestamp: " + latestMovingAverage.getTimestamp());
             this.accel.set(latestMovingAverage.getValue());
@@ -168,8 +170,9 @@ public abstract class MyoActivity extends Activity {
             Vector3 calAccel = new Vector3();
             calAccel.set(calibratedAccel.getAccel());
 
-            this.accel.multiply(9.81);
-            calAccel.multiply(9.81);
+            double g = 9.80665;
+            this.accel.multiply(g);
+            calAccel.multiply(g);
 
             this.accel.subtract(calAccel);
 
@@ -179,15 +182,27 @@ public abstract class MyoActivity extends Activity {
 //        Log.i(TAG, "Timestamp Now: " + String.valueOf(getOriginalAccel().getTimestamp()));
 
             //TODO create filtering window instead of rounding i.e. accel < 0.5  ===  accel = 0
-            double velocityX = timePeriod * round(accel.x(), 1);
-            double velocityY = timePeriod * round(accel.y(), 1);
-            double velocityZ = timePeriod * round(accel.z(), 1);
+            double velocityX = velocity.x() + timePeriod * round(accel.x(), 9);
+//            double velocityX = timePeriod * round(accel.x(), 0);
+            double velocityY = velocity.y() + timePeriod * round(accel.y(), 9);
+//            double velocityY = timePeriod * round(accel.y(), 0);
+            double velocityZ = velocity.z() + timePeriod * round(accel.z(), 9);
+//            double velocityZ = timePeriod * round(accel.z(), 0);
             this.velocity = new Vector3(velocityX, velocityY, velocityZ);
 
-            double positionX = position.x() + timePeriod * velocity.x();
-            double positionY = position.y() + timePeriod * velocity.y();
-            double positionZ = position.z() + timePeriod * velocity.z();
+            double positionX = position.x() + ((timePeriod * velocity.x()) / 1000000.0);
+            double positionY = position.y() + ((timePeriod * velocity.y()) / 1000000.0);
+            double positionZ = position.z() + ((timePeriod * velocity.z()) / 1000000.0);
             this.position = new Vector3(positionX, positionY, positionZ);
+            Log.i(TAG, "logdata accelX: " + String.format("%.6f", accel.x()));
+            Log.i(TAG, "logdata accelY: " + String.format("%.6f", accel.y()));
+            Log.i(TAG, "logdata accelZ: " + String.format("%.6f", accel.z()));
+            Log.i(TAG, "logdata velocityX: " + String.format("%.6f", velocity.x()));
+            Log.i(TAG, "logdata velocityY: " + String.format("%.6f", velocity.y()));
+            Log.i(TAG, "logdata velocityZ: " + String.format("%.6f", velocity.z()));
+            Log.i(TAG, "logdata positionX: " + String.format("%.6f", position.x()));
+            Log.i(TAG, "logdata positionY: " + String.format("%.6f", position.y()));
+            Log.i(TAG, "logdata positionZ: " + String.format("%.6f", position.z()));
         }
 //        }
     }
