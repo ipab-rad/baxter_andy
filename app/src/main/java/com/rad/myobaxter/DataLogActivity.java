@@ -1,27 +1,23 @@
 package com.rad.myobaxter;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.rad.myobaxter.Data.AccelSampleData;
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
-import com.thalmic.myo.Hub;
 import com.thalmic.myo.Myo;
 import com.thalmic.myo.Pose;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
-import com.thalmic.myo.scanner.ScanActivity;
 
-public class DataLogActivity extends Activity {
+public class DataLogActivity extends MyoActivity {
+
+    private static final String TAG = "DataLogActivity";
 
     private TextView titleTextView;
     private TextView mLockStateView;
@@ -34,6 +30,12 @@ public class DataLogActivity extends Activity {
     private TextView accelXTextView;
     private TextView accelYTextView;
     private TextView accelZTextView;
+    private TextView velocityXTextView;
+    private TextView velocityYTextView;
+    private TextView velocityZTextView;
+    private TextView positionXTextView;
+    private TextView positionYTextView;
+    private TextView positionZTextView;
     private TextView gyroXTextView;
     private TextView gyroYTextView;
     private TextView gyroZTextView;
@@ -89,22 +91,10 @@ public class DataLogActivity extends Activity {
         // represented as a quaternion.
         @Override
         public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-
-            // Calculate Euler angles (roll, pitch, and yaw) from the quaternion.
-            float roll = (float) Math.toDegrees(Quaternion.roll(rotation));
-            float pitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
-            float yaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
-
-            // Adjust roll and pitch for the orientation of the Myo on the arm.
-            if (myo.getXDirection() == XDirection.TOWARD_ELBOW) {
-                roll *= -1;
-                pitch *= -1;
-            }
-
-            // Next, we apply a rotation to the text view using the roll, pitch, and yaw.
-            rollTextView.setText(Float.toString(roll));
-            pitchTextView.setText(Float.toString(pitch));
-            yawTextView.setText(Float.toString(yaw));
+            calculateOffsetRotation(myo, timestamp, rotation);
+            rollTextView.setText(String.format("%.0f", getRollValue()));
+            pitchTextView.setText(String.format("%.0f", getPitchValue()));
+            yawTextView.setText(String.format("%.0f", getYawValue()));
         }
 
         // onPose() is called whenever a Myo provides a new pose.
@@ -130,6 +120,8 @@ public class DataLogActivity extends Activity {
                     poseTextView.setText(getString(restTextId));
                     break;
                 case FIST:
+                    resetSensors();
+                    showToast(getString(R.string.reset));
                     poseTextView.setText(getString(R.string.pose_fist));
                     break;
                 case WAVE_IN:
@@ -143,35 +135,57 @@ public class DataLogActivity extends Activity {
                     break;
             }
 
-            if (pose != Pose.UNKNOWN && pose != Pose.REST) {
-                // Tell the Myo to stay unlocked until told otherwise. We do that here so you can
-                // hold the poses without the Myo becoming locked.
-                myo.unlock(Myo.UnlockType.HOLD);
+            //TODO move elsewhere
+            // Tell the Myo to stay unlocked until told otherwise. We do that here so you can
+            // hold the poses without the Myo becoming locked.
+            myo.unlock(Myo.UnlockType.HOLD);
 
+            if (pose != Pose.UNKNOWN && pose != Pose.REST) {
                 // Notify the Myo that the pose has resulted in an action, in this case changing
                 // the text on the screen. The Myo will vibrate.
                 myo.notifyUserAction();
-            } else {
-                // Tell the Myo to stay unlocked only for a short period. This allows the Myo to
-                // stay unlocked while poses are being performed, but lock after inactivity.
-                myo.unlock(Myo.UnlockType.TIMED);
             }
         }
 
         @Override
         public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
-            accelXTextView.setText(Double.toString(accel.x()));
-            accelYTextView.setText(Double.toString(accel.y()));
-            accelZTextView.setText(Double.toString(accel.z()));
+//            Log.i(TAG, "Timestamp: " + String.valueOf(timestamp));
+            getOriginalAccel().setTimestamp(timestamp);
+            getOriginalAccel().setAccel(accel);
+            AccelSampleData accelSampleData = getAccelSampleData();
+            accelSampleData.addSample(accel, timestamp);
+            if(getCalibratedAccel().getAccel() == null){
+                getCalibratedAccel().setTimestamp(timestamp);
+                getCalibratedAccel().setAccel(accel);
+            }
+            calculateVelocityAndPositionFromAcceleration();
+            accelXTextView.setText(String.format("%.3f", getAccel().x()));
+            accelYTextView.setText(String.format("%.3f", getAccel().y()));
+            accelZTextView.setText(String.format("%.3f", getAccel().z()));
+
+            velocityXTextView.setText(String.format("%.3f", getVelocity().x()));
+            velocityYTextView.setText(String.format("%.3f", getVelocity().y()));
+            velocityZTextView.setText(String.format("%.3f", getVelocity().z()));
+
+            positionXTextView.setText(String.format("%.3f", getPosition().x()));
+            positionYTextView.setText(String.format("%.3f", getPosition().y()));
+            positionZTextView.setText(String.format("%.3f", getPosition().z()));
+
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
-            gyroXTextView.setText(Double.toString(gyro.x()));
-            gyroYTextView.setText(Double.toString(gyro.y()));
-            gyroZTextView.setText(Double.toString(gyro.z()));
+            getOriginalGyro().setTimestamp(timestamp);
+            getOriginalGyro().setGyro(gyro);
+            if(getCalibratedGyro().getGyro() == null){
+                getCalibratedGyro().setTimestamp(timestamp);
+                getCalibratedGyro().setGyro(gyro);
+            }
+            gyro.subtract(getCalibratedGyro().getGyro());
+            gyroXTextView.setText(String.format("%.0f", gyro.x()));
+            gyroYTextView.setText(String.format("%.0f", gyro.y()));
+            gyroZTextView.setText(String.format("%.0f", gyro.z()));
         }
-
     };
 
     @Override
@@ -179,7 +193,6 @@ public class DataLogActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_log);
 
-        titleTextView = (TextView) findViewById(R.id.title);
         mLockStateView = (TextView) findViewById(R.id.locked);
         connectedTextView = (TextView) findViewById(R.id.connection_status);
         armSyncTextView = (TextView) findViewById(R.id.sync_status);
@@ -190,56 +203,16 @@ public class DataLogActivity extends Activity {
         accelXTextView = (TextView) findViewById(R.id.accelXValue);
         accelYTextView = (TextView) findViewById(R.id.accelYValue);
         accelZTextView = (TextView) findViewById(R.id.accelZValue);
+        velocityXTextView = (TextView) findViewById(R.id.velocityXValue);
+        velocityYTextView = (TextView) findViewById(R.id.velocityYValue);
+        velocityZTextView = (TextView) findViewById(R.id.velocityZValue);
+        positionXTextView = (TextView) findViewById(R.id.positionXValue);
+        positionYTextView = (TextView) findViewById(R.id.positionYValue);
+        positionZTextView = (TextView) findViewById(R.id.positionZValue);
         gyroXTextView = (TextView) findViewById(R.id.gyroXValue);
         gyroYTextView = (TextView) findViewById(R.id.gyroYValue);
         gyroZTextView = (TextView) findViewById(R.id.gyroZValue);
 
-        // First, we initialize the Hub singleton with an application identifier.
-        Hub hub = Hub.getInstance();
-        if (!hub.init(this, getPackageName())) {
-            // We can't do anything with the Myo device if the Hub can't be initialized, so exit.
-            Toast.makeText(this, "Couldn't initialize Hub", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        // Next, register for DeviceListener callbacks.
-        hub.addListener(mListener);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // We don't want any callbacks when the Activity is gone, so unregister the listener.
-//        Hub.getInstance().removeListener(mListener);
-//
-//        if (isFinishing()) {
-//            // The Activity is finishing, so shutdown the Hub. This will disconnect from the Myo.
-//            Hub.getInstance().shutdown();
-//        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (R.id.action_scan == id) {
-            onScanActionSelected();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void onScanActionSelected() {
-        // Launch the ScanActivity to scan for Myos to connect to.
-        Intent intent = new Intent(this, ScanActivity.class);
-        startActivity(intent);
+        initializeHub(mListener);
     }
 }

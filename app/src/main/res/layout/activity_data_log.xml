@@ -13,17 +13,6 @@
     tools:ignore="MergeRootFrame">
 
     <TextView
-        android:id="@+id/title"
-        android:text="@string/data_log"
-        android:textSize="50dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        tools:ignore="SpUsage"
-        android:layout_row="0"
-        android:layout_column="0" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/lock_state"
@@ -283,4 +272,132 @@
         android:layout_row="13"
         android:layout_column="1" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/velocityX"
+        android:text="@string/velocityX"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="14"
+        android:layout_column="0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/velocityXValue"
+        android:text="0"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="14"
+        android:layout_column="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/velocityY"
+        android:text="@string/velocityY"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="15"
+        android:layout_column="0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/velocityYValue"
+        android:text="0"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="15"
+        android:layout_column="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/velocityZ"
+        android:text="@string/velocityZ"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="16"
+        android:layout_column="0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/velocityZValue"
+        android:text="0"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="16"
+        android:layout_column="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/positionX"
+        android:text="@string/positionX"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="17"
+        android:layout_column="0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/positionXValue"
+        android:text="0"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="17"
+        android:layout_column="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/positionY"
+        android:text="@string/positionY"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="18"
+        android:layout_column="0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/positionYValue"
+        android:text="0"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="18"
+        android:layout_column="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/positionZ"
+        android:text="@string/positionZ"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="19"
+        android:layout_column="0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/positionZValue"
+        android:text="0"
+        android:textSize="20dp"
+        tools:ignore="SpUsage"
+        android:layout_row="19"
+        android:layout_column="1" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/resetSensorsButton"
+        android:text="@string/reset_sensors"
+        android:onClick="resetSensors"
+        android:layout_row="20"
+        android:layout_column="0"/>
 </GridLayout>

@@ -1,27 +1,20 @@
 package com.rad.myobaxter;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
-import com.thalmic.myo.Hub;
 import com.thalmic.myo.Myo;
 import com.thalmic.myo.Pose;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
-import com.thalmic.myo.scanner.ScanActivity;
 
-public class HelloWorldActivity extends Activity {
+public class HelloWorldActivity extends MyoActivity {
+    private static final String TAG = "HelloWorldActivity";
 
     private TextView mLockStateView;
     private TextView mTextView;
@@ -77,21 +70,11 @@ public class HelloWorldActivity extends Activity {
         // represented as a quaternion.
         @Override
         public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-            // Calculate Euler angles (roll, pitch, and yaw) from the quaternion.
-            float roll = (float) Math.toDegrees(Quaternion.roll(rotation));
-            float pitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
-            float yaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
-
-            // Adjust roll and pitch for the orientation of the Myo on the arm.
-            if (myo.getXDirection() == XDirection.TOWARD_ELBOW) {
-                roll *= -1;
-                pitch *= -1;
-            }
-
+            calculateOffsetRotation(myo, timestamp, rotation);
             // Next, we apply a rotation to the text view using the roll, pitch, and yaw.
-            mTextView.setRotation(roll);
-            mTextView.setRotationX(pitch);
-            mTextView.setRotationY(yaw);
+            mTextView.setRotation(getRollValue());
+            mTextView.setRotationX(getPitchValue());
+            mTextView.setRotationY(getYawValue());
         }
 
         // onPose() is called whenever a Myo provides a new pose.
@@ -117,6 +100,10 @@ public class HelloWorldActivity extends Activity {
                     mTextView.setText(getString(restTextId));
                     break;
                 case FIST:
+                    getCalibratedAccel().setAccel(getOriginalAccel().getAccel());
+                    getCalibratedGyro().setGyro(getOriginalGyro().getGyro());
+                    getCalibratedRotation().setRotation(getOriginalRotation().getRotation());
+                    showToast(getString(R.string.reset));
                     mTextView.setText(getString(R.string.pose_fist));
                     break;
                 case WAVE_IN:
@@ -130,34 +117,31 @@ public class HelloWorldActivity extends Activity {
                     break;
             }
 
-            if (pose != Pose.UNKNOWN && pose != Pose.REST) {
-                // Tell the Myo to stay unlocked until told otherwise. We do that here so you can
-                // hold the poses without the Myo becoming locked.
-                myo.unlock(Myo.UnlockType.HOLD);
+            myo.unlock(Myo.UnlockType.HOLD);
 
-                // Notify the Myo that the pose has resulted in an action, in this case changing
-                // the text on the screen. The Myo will vibrate.
+            if (pose != Pose.UNKNOWN && pose != Pose.REST) {
+//                // Tell the Myo to stay unlocked until told otherwise. We do that here so you can
+//                // hold the poses without the Myo becoming locked.
+//                myo.unlock(Myo.UnlockType.HOLD);
+//
+//                // Notify the Myo that the pose has resulted in an action, in this case changing
+//                // the text on the screen. The Myo will vibrate.
                 myo.notifyUserAction();
             } else {
-                // Tell the Myo to stay unlocked only for a short period. This allows the Myo to
-                // stay unlocked while poses are being performed, but lock after inactivity.
-                myo.unlock(Myo.UnlockType.TIMED);
+//                // Tell the Myo to stay unlocked only for a short period. This allows the Myo to
+//                // stay unlocked while poses are being performed, but lock after inactivity.
+//                myo.unlock(Myo.UnlockType.TIMED);
             }
         }
 
         @Override
         public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
-            double xAccel = accel.x();
-            double yAccel = accel.y();
-            double zAccel = accel.z();
+            getOriginalAccel().setAccel(accel);
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
-            double xGyro = gyro.x();
-            double yGyro = gyro.y();
-            double zGyro = gyro.z();
-//            mTextView.layout((int) xGyro*10, (int) yGyro*10, (int) xGyro*10+200, (int) yGyro*10+200);
+            getOriginalGyro().setGyro(gyro);
         }
 
     };
@@ -169,53 +153,6 @@ public class HelloWorldActivity extends Activity {
 
         mLockStateView = (TextView) findViewById(R.id.lock_state);
         mTextView = (TextView) findViewById(R.id.text);
-
-        // First, we initialize the Hub singleton with an application identifier.
-        Hub hub = Hub.getInstance();
-        if (!hub.init(this, getPackageName())) {
-            // We can't do anything with the Myo device if the Hub can't be initialized, so exit.
-            Toast.makeText(this, "Couldn't initialize Hub", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        // Next, register for DeviceListener callbacks.
-        hub.addListener(mListener);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // We don't want any callbacks when the Activity is gone, so unregister the listener.
-//        Hub.getInstance().removeListener(mListener);
-//
-//        if (isFinishing()) {
-//            // The Activity is finishing, so shutdown the Hub. This will disconnect from the Myo.
-//            Hub.getInstance().shutdown();
-//        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (R.id.action_scan == id) {
-            onScanActionSelected();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void onScanActionSelected() {
-        // Launch the ScanActivity to scan for Myos to connect to.
-        Intent intent = new Intent(this, ScanActivity.class);
-        startActivity(intent);
+        initializeHub(mListener);
     }
 }

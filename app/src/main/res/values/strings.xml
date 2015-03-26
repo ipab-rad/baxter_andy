@@ -26,6 +26,12 @@
     <string name="accelX">Accel X: </string>
     <string name="accelY">Accel Y: </string>
     <string name="accelZ">Accel Z: </string>
+    <string name="velocityX">Velocity X: </string>
+    <string name="velocityY">Velocity Y: </string>
+    <string name="velocityZ">Velocity Z: </string>
+    <string name="positionX">Position X: </string>
+    <string name="positionY">Position Y: </string>
+    <string name="positionZ">Position Z: </string>
     <string name="roll">Roll: </string>
     <string name="pitch">Pitch: </string>
     <string name="yaw">Yaw: </string>
@@ -40,5 +46,7 @@
     <string name="long_vibrate_five_times">Long Vibrate x5</string>
     <string name="medium_vibrate_five_times">Medium Vibrate x5</string>
     <string name="short_vibrate_twenty_five_times">Short Vibrate x25</string>
+    <string name="reset">Myo Calibrated</string>
+    <string name="reset_sensors">Reset Sensors</string>
 
 </resources>
