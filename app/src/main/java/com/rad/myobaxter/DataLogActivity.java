@@ -40,6 +40,8 @@ public class DataLogActivity extends MyoActivity {
     private TextView gyroYTextView;
     private TextView gyroZTextView;
 
+    private WiFiOutputChannel wiFiOutputChannel;
+
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {
@@ -118,20 +120,25 @@ public class DataLogActivity extends MyoActivity {
                             break;
                     }
                     poseTextView.setText(getString(restTextId));
+                    wiFiOutputChannel.pingSocket("gesture " + getString(restTextId));
                     break;
                 case FIST:
                     resetSensors();
                     showToast(getString(R.string.reset));
                     poseTextView.setText(getString(R.string.pose_fist));
+                    wiFiOutputChannel.pingSocket("gesture fist");
                     break;
                 case WAVE_IN:
                     poseTextView.setText(getString(R.string.pose_wavein));
+                    wiFiOutputChannel.pingSocket("gesture wave_in");
                     break;
                 case WAVE_OUT:
                     poseTextView.setText(getString(R.string.pose_waveout));
+                    wiFiOutputChannel.pingSocket("gesture wave_out");
                     break;
                 case FINGERS_SPREAD:
                     poseTextView.setText(getString(R.string.pose_fingersspread));
+                    wiFiOutputChannel.pingSocket("gesture spread");
                     break;
             }
 
@@ -171,6 +178,9 @@ public class DataLogActivity extends MyoActivity {
             positionYTextView.setText(String.format("%.3f", getPosition().y()));
             positionZTextView.setText(String.format("%.3f", getPosition().z()));
 
+
+            String accelDataString = getAccel().x() + " " + getAccel().y() + " " + getAccel().z();
+            wiFiOutputChannel.pingSocket(accelDataString);
         }
 
         @Override
@@ -214,5 +224,8 @@ public class DataLogActivity extends MyoActivity {
         gyroZTextView = (TextView) findViewById(R.id.gyroZValue);
 
         initializeHub(mListener);
+
+        wiFiOutputChannel = new WiFiOutputChannel();
+        wiFiOutputChannel.init(this);
     }
 }
