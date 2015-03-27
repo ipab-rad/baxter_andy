@@ -224,12 +224,13 @@ public abstract class MyoActivity extends Activity {
     protected void resetSensors() {
         List<Vector3Sample> movingAvg = accelSampleData.getMovingAverage();
         List<Vector3Sample> samples = accelSampleData.getSamples();
-        if(samples.size() > 200) {
+        int calibrated_sample_size = AccelSampleData.CALIBRATED_SAMPLE_SIZE;
+        if(samples.size() > calibrated_sample_size) {
             Vector3 calibratedAccel = new Vector3();
-            for (int i = samples.size() - 200; i < samples.size(); i++) {
+            for (int i = samples.size() - calibrated_sample_size; i < samples.size(); i++) {
                 calibratedAccel.add(samples.get(i).getValue());
             }
-            calibratedAccel.divide(200);
+            calibratedAccel.divide(calibrated_sample_size);
 
             getCalibratedAccel().setAccel(calibratedAccel);
             getCalibratedGyro().setGyro(getOriginalGyro().getGyro());
