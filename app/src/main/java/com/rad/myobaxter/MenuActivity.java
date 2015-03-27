@@ -29,6 +29,20 @@ public class MenuActivity extends Activity {
         startActivity(intent);
     }
 
+//    public void  expectOneMyo(View view){
+//        expectMyo(1);
+//    }
+//
+//    public void  expectTwoMyo(View view){
+//        expectMyo(2);
+//    }
+//
+//    private void expectMyo(int numberOfMyos){
+//        setAttachingCount(numberOfMyos);
+//        initializeHub(getMListener());
+//        showToast("Number of myos enabled: " + getAttachingCount());
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

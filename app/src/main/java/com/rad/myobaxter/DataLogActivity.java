@@ -2,6 +2,7 @@ package com.rad.myobaxter;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.rad.myobaxter.Data.AccelSampleData;
@@ -14,9 +15,16 @@ import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
 
+import java.util.ArrayList;
+
 public class DataLogActivity extends MyoActivity {
 
     private static final String TAG = "DataLogActivity";
+
+    // We store each Myo object that we attach to in this list, so that we can keep track of the order we've seen
+    // each Myo and give it a unique short identifier (see onAttach() and identifyMyo() below).
+
+    private ArrayList<Myo> mKnownMyos = new ArrayList<Myo>();
 
     private TextView titleTextView;
     private TextView mLockStateView;
@@ -45,6 +53,17 @@ public class DataLogActivity extends MyoActivity {
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {
+
+        @Override
+        public void onAttach(Myo myo, long timestamp) {
+            // The object for a Myo is unique - in other words, it's safe to compare two Myo references to
+            // see if they're referring to the same Myo.
+            // Add the Myo object to our list of known Myo devices. This list is used to implement identifyMyo() below so
+            // that we can give each Myo a nice short identifier.
+            mKnownMyos.add(myo);
+            // Now that we've added it to our list, get our short ID for it and print it out.
+            Log.i(TAG, "Attached to " + myo.getMacAddress() + ", now known as Myo " + identifyMyo(myo) + ".");
+        }
 
         // onConnect() is called whenever a Myo has been connected.
         @Override
@@ -261,5 +280,11 @@ public class DataLogActivity extends MyoActivity {
 
         wiFiOutputChannel = new WiFiOutputChannel();
         wiFiOutputChannel.init(this);
+    }
+
+    // This is a utility function implemented for this sample that maps a Myo to a unique ID starting at 1.
+    // It does so by looking for the Myo object in mKnownMyos, which onAttach() adds each Myo into as it is attached.
+    private int identifyMyo(Myo myo) {
+        return mKnownMyos.indexOf(myo) + 1;
     }
 }

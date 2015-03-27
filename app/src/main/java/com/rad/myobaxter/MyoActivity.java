@@ -28,6 +28,7 @@ import com.thalmic.myo.scanner.ScanActivity;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -60,8 +61,11 @@ public abstract class MyoActivity extends Activity {
     private int count = 0;
     private final double ZERO_ACCEL_THRESHOLD = 0.1;
     private final double VELOCITY_DEGRADER = 0.9;
+    private int attachingCount = 2;
+    private DeviceListener mListener;
 
     protected void initializeHub(DeviceListener mListener) {
+        this.mListener = mListener;
         // First, we initialize the Hub singleton with an application identifier.
         Hub hub = Hub.getInstance();
         if (!hub.init(this, getPackageName())) {
@@ -70,6 +74,16 @@ public abstract class MyoActivity extends Activity {
             finish();
             return;
         }
+
+        hub.setLockingPolicy(Hub.LockingPolicy.NONE);
+
+        // Set the maximum number of simultaneously attached Myos to 2.
+        hub.setMyoAttachAllowance(attachingCount);
+        Log.i(TAG, "Attaching to " + attachingCount + " Myo armbands.");
+        // attachToAdjacentMyos() attaches to Myo devices that are physically very near to the Bluetooth radio
+        // until it has attached to the provided count.
+        // DeviceListeners attached to the hub will receive onAttach() events once attaching has completed.
+        hub.attachToAdjacentMyos(attachingCount);
 
         // Next, register for DeviceListener callbacks.
         hub.addListener(mListener);

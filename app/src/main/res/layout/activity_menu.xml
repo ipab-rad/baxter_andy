@@ -25,5 +25,15 @@
         android:layout_height="wrap_content"
         android:text="@string/vibrate_demo"
         android:onClick="vibrateDemo" />
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/expect_one_myo"-->
+        <!--android:onClick="expectOneMyo" />-->
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/expect_two_myo"-->
+        <!--android:onClick="expectTwoMyo" />-->
 
 </LinearLayout>

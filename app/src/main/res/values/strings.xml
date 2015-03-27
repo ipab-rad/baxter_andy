@@ -48,5 +48,7 @@
     <string name="short_vibrate_twenty_five_times">Short Vibrate x25</string>
     <string name="reset">Myo Calibrated</string>
     <string name="reset_sensors">Reset Sensors</string>
+    <string name="expect_one_myo">One Myo</string>
+    <string name="expect_two_myo">Two Myos</string>
 
 </resources>
