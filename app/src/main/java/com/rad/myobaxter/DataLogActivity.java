@@ -2,7 +2,6 @@ package com.rad.myobaxter;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.rad.myobaxter.Data.AccelSampleData;
@@ -149,7 +148,6 @@ public class DataLogActivity extends MyoActivity {
 
         @Override
         public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
-//            Log.i(TAG, "Timestamp: " + String.valueOf(timestamp));
             getOriginalAccel().setTimestamp(timestamp);
             getOriginalAccel().setAccel(accel);
             AccelSampleData accelSampleData = getAccelSampleData();
