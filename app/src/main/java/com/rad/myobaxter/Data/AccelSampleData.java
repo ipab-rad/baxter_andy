@@ -23,12 +23,13 @@ public class AccelSampleData {
         movingAverage = new ArrayList<Vector3Sample>();
     }
 
-    public void addSample(Vector3 accel, long timestamp) {
+    public void addSample(Vector3 accel, Vector3 calAccel, long timestamp) {
         if(startTime == 0){
             startTime = timestamp;
             sampleRangeStartTime = timestamp;
         }
         Vector3Sample sample = new Vector3Sample(accel, timestamp);
+        Vector3Sample calAccelSample = new Vector3Sample(calAccel, timestamp);
         samples.add(sample);
         addNewMovingAverage(accel, timestamp);
         if(samples.size() > SAMPLE_SIZE){

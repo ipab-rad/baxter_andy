@@ -158,11 +158,15 @@ public class DataLogActivity extends MyoActivity {
             getOriginalAccel().setTimestamp(timestamp);
             getOriginalAccel().setAccel(accel);
             AccelSampleData accelSampleData = getAccelSampleData();
-            accelSampleData.addSample(accel, timestamp);
+
+            convertFromBodyToInertiaFrame(accel);
             if(getCalibratedAccel().getAccel() == null){
                 getCalibratedAccel().setTimestamp(timestamp);
                 getCalibratedAccel().setAccel(accel);
             }
+
+            accelSampleData.addSample(accel, getCalibratedAccel().getAccel(), timestamp);
+
             calculateVelocityAndPositionFromAcceleration();
             accelXTextView.setText(String.format("%.3f", getAccel().x()));
             accelYTextView.setText(String.format("%.3f", getAccel().y()));
