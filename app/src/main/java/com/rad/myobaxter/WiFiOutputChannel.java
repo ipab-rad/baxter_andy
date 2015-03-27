@@ -117,6 +117,11 @@ public class WiFiOutputChannel implements SensorEventListener {
         pingSocket(myo.getName() + ":gesture " + gesture);
     }
 
+    public void sendCommand(Myo myo, String command){
+        Log.v("Hack", "************* Myo: command" + myo.getName() + " " + command);
+        pingSocket(myo.getName() + ":" + command);
+    }
+
     public void pingSocket(final String message){
 
         // Rate limit

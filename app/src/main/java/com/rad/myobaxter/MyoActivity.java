@@ -58,6 +58,8 @@ public abstract class MyoActivity extends Activity {
     private float yawValue;
 
     private int count = 0;
+    private final double ZERO_ACCEL_THRESHOLD = 0.1;
+    private final double VELOCITY_DEGRADER = 0.9;
 
     protected void initializeHub(DeviceListener mListener) {
         // First, we initialize the Hub singleton with an application identifier.
@@ -147,9 +149,9 @@ public abstract class MyoActivity extends Activity {
         rollValue = originalRoll - calibratedRoll;
         pitchValue = originalPitch - calibratedPitch;
         yawValue = originalYaw - calibratedYaw;
-        Log.i(TAG, "orientation: roll: " + rollValue);
-        Log.i(TAG, "orientation: pitch: " + pitchValue);
-        Log.i(TAG, "orientation: yaw: " + yawValue);
+        Log.d(TAG, "orientation: roll: " + rollValue);
+        Log.d(TAG, "orientation: pitch: " + pitchValue);
+        Log.d(TAG, "orientation: yaw: " + yawValue);
     }
 
     protected void calculateVelocityAndPositionFromAcceleration(){
@@ -157,46 +159,42 @@ public abstract class MyoActivity extends Activity {
         List<Vector3Sample> movingAverage = accelSampleData.getMovingAverage();
         if(movingAverage.size() > 2) {
             Vector3Sample latestMovingAverage = movingAverage.get(movingAverage.size() - 1);
-
             Vector3Sample previousMovingAverage = movingAverage.get(movingAverage.size() - 2);
-            Vector3 differenceVector = new Vector3();
-            differenceVector.set(latestMovingAverage.getValue());
-            differenceVector.subtract(previousMovingAverage.getValue());
-            double threshold = 0.0005;
+
+//            Vector3 differenceVector = new Vector3();
+//            differenceVector.set(latestMovingAverage.getValue());
+//            differenceVector.subtract(previousMovingAverage.getValue());
+//            double threshold = 0.0005;
 //            if(differenceVector.x() > threshold || differenceVector.y() > threshold || differenceVector.z() > threshold) {
-                long previousMovingAvgTimestamp = previousMovingAverage.getTimestamp();
-                double timePeriod = (double) (latestMovingAverage.getTimestamp() - previousMovingAvgTimestamp) / 1000.0;
-                Log.i(TAG, "Time Period: " + timePeriod);
-                Log.i(TAG, "Timestamp: " + latestMovingAverage.getTimestamp());
-                Vector3 accel = new Vector3();
-                accel.set(latestMovingAverage.getValue());
-                Vector3 calAccel = new Vector3();
-                calAccel.set(calibratedAccel.getAccel());
-                convertFromBodyToInertiaFrame(accel);
 
-                double g = 9.80665;
-                accel.multiply(g);
-                calAccel.multiply(g);
-                accel.subtract(calAccel);
-                this.accel.set(accel);
+            long previousMovingAvgTimestamp = previousMovingAverage.getTimestamp();
+            double timePeriod = (double) (latestMovingAverage.getTimestamp() - previousMovingAvgTimestamp) / 1000.0;
 
-            double accelX = Math.abs(accel.x()) < 0.1 ? 0 : accel.x();
+            Vector3 accel = new Vector3();
+            accel.set(latestMovingAverage.getValue());
+//
+            accel.subtract(getCalibratedAccel().getAccel());
+            double g = 9.80665;
+            accel.multiply(g);
+
+
+            double accelX = Math.abs(accel.x()) < ZERO_ACCEL_THRESHOLD ? 0 : accel.x();
 //                double accelX = accel.x();
-            double accelY = Math.abs(accel.y()) < 0.1 ? 0 : accel.y();
+            double accelY = Math.abs(accel.y()) < ZERO_ACCEL_THRESHOLD ? 0 : accel.y();
 //                double accelY = accel.y();
-            double accelZ = Math.abs(accel.z()) < 0.1 ? 0 : accel.z();
+            double accelZ = Math.abs(accel.z()) < ZERO_ACCEL_THRESHOLD ? 0 : accel.z();
 //                double accelZ = accel.z();
             this.accel.set(new Vector3(accelX, accelY, accelZ));
             double vx = velocity.x() + timePeriod * round(accelX, 9);
-            double velocityX = accelX == 0 ? vx*0.9: vx;
+            double velocityX = accelX == 0 ? vx* VELOCITY_DEGRADER : vx;
 //                double velocityX = velocity.x() + timePeriod * round(accelX, 9);
 //            double velocityX = timePeriod * round(accel.x(), 0);
             double vy = velocity.y() + timePeriod * round(accelY, 9);
-            double velocityY = accelY == 0 ? vy*0.9: vy;
+            double velocityY = accelY == 0 ? vy* VELOCITY_DEGRADER : vy;
 //                double velocityY = velocity.y() + timePeriod * round(accelY, 9);
 //            double velocityY = timePeriod * round(accel.y(), 0);
             double vz = velocity.z() + timePeriod * round(accelZ, 9);
-            double velocityZ = accelZ == 0 ? vz*0.9: vz;
+            double velocityZ = accelZ == 0 ? vz* VELOCITY_DEGRADER : vz;
 //                double velocityZ = velocity.z() + timePeriod * round(accelZ, 9);
 //            double velocityZ = timePeriod * round(accel.z(), 0);
                 this.velocity = new Vector3(velocityX, velocityY, velocityZ);
@@ -206,16 +204,16 @@ public abstract class MyoActivity extends Activity {
                 double positionZ = position.z() + ((timePeriod * velocity.z()));
                 this.position = new Vector3(positionX, positionY, positionZ);
 //            }
-            Log.i(TAG, "logdata timestamp: " + String.valueOf(latestMovingAverage.getTimestamp()));
-            Log.i(TAG, "logdata accelX: " + String.format("%.6f", accel.x()));
-            Log.i(TAG, "logdata accelY: " + String.format("%.6f", accel.y()));
-            Log.i(TAG, "logdata accelZ: " + String.format("%.6f", accel.z()));
-            Log.i(TAG, "logdata velocityX: " + String.format("%.6f", velocity.x()));
-            Log.i(TAG, "logdata velocityY: " + String.format("%.6f", velocity.y()));
-            Log.i(TAG, "logdata velocityZ: " + String.format("%.6f", velocity.z()));
-            Log.i(TAG, "logdata positionX: " + String.format("%.6f", position.x()));
-            Log.i(TAG, "logdata positionY: " + String.format("%.6f", position.y()));
-            Log.i(TAG, "logdata positionZ: " + String.format("%.6f", position.z()));
+            Log.d(TAG, "logdata timestamp: " + String.valueOf(latestMovingAverage.getTimestamp()));
+            Log.d(TAG, "logdata accelX: " + String.format("%.6f", accel.x()));
+            Log.d(TAG, "logdata accelY: " + String.format("%.6f", accel.y()));
+            Log.d(TAG, "logdata accelZ: " + String.format("%.6f", accel.z()));
+            Log.d(TAG, "logdata velocityX: " + String.format("%.6f", velocity.x()));
+            Log.d(TAG, "logdata velocityY: " + String.format("%.6f", velocity.y()));
+            Log.d(TAG, "logdata velocityZ: " + String.format("%.6f", velocity.z()));
+            Log.d(TAG, "logdata positionX: " + String.format("%.6f", position.x()));
+            Log.d(TAG, "logdata positionY: " + String.format("%.6f", position.y()));
+            Log.d(TAG, "logdata positionZ: " + String.format("%.6f", position.z()));
         }
     }
 
@@ -223,16 +221,16 @@ public abstract class MyoActivity extends Activity {
         resetSensors();
     }
 
-    //TODO change this to use average of sampled data for accelerometer.
     protected void resetSensors() {
         List<Vector3Sample> movingAvg = accelSampleData.getMovingAverage();
         List<Vector3Sample> samples = accelSampleData.getSamples();
-        if(samples.size() > 200) {
+        int calibrated_sample_size = AccelSampleData.CALIBRATED_SAMPLE_SIZE;
+        if(samples.size() > calibrated_sample_size) {
             Vector3 calibratedAccel = new Vector3();
-            for (int i = samples.size() - 200; i < samples.size(); i++) {
+            for (int i = samples.size() - calibrated_sample_size; i < samples.size(); i++) {
                 calibratedAccel.add(samples.get(i).getValue());
             }
-            calibratedAccel.divide(200);
+            calibratedAccel.divide(calibrated_sample_size);
 
             getCalibratedAccel().setAccel(calibratedAccel);
             getCalibratedGyro().setGyro(getOriginalGyro().getGyro());
@@ -246,7 +244,7 @@ public abstract class MyoActivity extends Activity {
         }
     }
 
-    private void convertFromBodyToInertiaFrame(Vector3 accel) {
+    protected void convertFromBodyToInertiaFrame(Vector3 accel) {
         Quaternion q = new Quaternion();
         Quaternion currentQ = new Quaternion();
         Quaternion currentQInv = new Quaternion();

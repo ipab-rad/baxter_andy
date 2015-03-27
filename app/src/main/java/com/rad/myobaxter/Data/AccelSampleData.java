@@ -15,6 +15,7 @@ public class AccelSampleData {
     public static int SAMPLE_SIZE = 10;
     private long startTime;
     private long sampleRangeStartTime;
+    public static int CALIBRATED_SAMPLE_SIZE = 200;
     private List<Vector3Sample> samples;
     private List<Vector3Sample> movingAverage;
 
@@ -23,16 +24,21 @@ public class AccelSampleData {
         movingAverage = new ArrayList<Vector3Sample>();
     }
 
-    public void addSample(Vector3 accel, long timestamp) {
+    public void addSample(Vector3 accel, Vector3 calAccel, long timestamp) {
         if(startTime == 0){
             startTime = timestamp;
             sampleRangeStartTime = timestamp;
         }
         Vector3Sample sample = new Vector3Sample(accel, timestamp);
+        Vector3Sample calAccelSample = new Vector3Sample(calAccel, timestamp);
         samples.add(sample);
         addNewMovingAverage(accel, timestamp);
         if(samples.size() > SAMPLE_SIZE){
             sampleRangeStartTime = samples.get(samples.size() - SAMPLE_SIZE).getTimestamp();
+        }
+        if(samples.size() > CALIBRATED_SAMPLE_SIZE + 1){
+            samples.remove(0);
+            movingAverage.remove(0);
         }
     }
 

@@ -41,6 +41,7 @@ public class DataLogActivity extends MyoActivity {
 
     private WiFiOutputChannel wiFiOutputChannel;
 
+    private boolean enabled = false;
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {
@@ -103,6 +104,28 @@ public class DataLogActivity extends MyoActivity {
         public void onPose(Myo myo, long timestamp, Pose pose) {
             // Handle the cases of the Pose enumeration, and change the text of the text view
             // based on the pose we receive.
+
+            boolean lessThanASecond = (timestamp - gestureStartTime) < 1000;
+            boolean greaterThanASecond = (timestamp - gestureStartTime) > 1000;
+            boolean timerInProgress = gestureStartTime != 0;
+
+            if(lessThanASecond && timerInProgress) {
+                gestureStartTime = 0;
+            }
+
+            if(greaterThanASecond && timerInProgress){
+                enabled = !enabled;
+
+                if(enabled) {
+                    showToast("enabled");
+                    wiFiOutputChannel.sendCommand(myo, "enable");
+                } else {
+                    showToast("disabled");
+                    wiFiOutputChannel.sendCommand(myo, "disable");
+                }
+                gestureStartTime = 0;
+            }
+
             switch (pose) {
                 case UNKNOWN:
                     poseTextView.setText(getString(R.string.unknown));
@@ -122,10 +145,14 @@ public class DataLogActivity extends MyoActivity {
                     wiFiOutputChannel.sendGesture(myo, getString(restTextId).toLowerCase());
                     break;
                 case FIST:
-                    resetSensors();
-                    showToast(getString(R.string.reset));
+                    if(!enabled) {
+                        resetSensors();
+                        wiFiOutputChannel.sendCommand(myo, "calibrated");
+                        showToast(getString(R.string.reset));
+                    } else {
+                        wiFiOutputChannel.sendGesture(myo, "fist");
+                    }
                     poseTextView.setText(getString(R.string.pose_fist));
-                    wiFiOutputChannel.sendGesture(myo, "fist");
                     break;
                 case WAVE_IN:
                     poseTextView.setText(getString(R.string.pose_wavein));
@@ -137,6 +164,7 @@ public class DataLogActivity extends MyoActivity {
                     break;
                 case FINGERS_SPREAD:
                     poseTextView.setText(getString(R.string.pose_fingersspread));
+                    gestureStartTime = timestamp;
                     wiFiOutputChannel.sendGesture(myo, "spread");
                     break;
             }
@@ -158,11 +186,16 @@ public class DataLogActivity extends MyoActivity {
             getOriginalAccel().setTimestamp(timestamp);
             getOriginalAccel().setAccel(accel);
             AccelSampleData accelSampleData = getAccelSampleData();
-            accelSampleData.addSample(accel, timestamp);
+
+            convertFromBodyToInertiaFrame(accel);
             if(getCalibratedAccel().getAccel() == null){
                 getCalibratedAccel().setTimestamp(timestamp);
                 getCalibratedAccel().setAccel(accel);
             }
+
+            accelSampleData.addSample(accel, getCalibratedAccel().getAccel(), timestamp);
+
+            //TODO turn off if not using
             calculateVelocityAndPositionFromAcceleration();
             accelXTextView.setText(String.format("%.3f", getAccel().x()));
             accelYTextView.setText(String.format("%.3f", getAccel().y()));
@@ -197,6 +230,7 @@ public class DataLogActivity extends MyoActivity {
             gyroZTextView.setText(String.format("%.0f", gyro.z()));
         }
     };
+    private long gestureStartTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -6,7 +6,7 @@ def getStringInRow(row, stringToFind):
 	print row[0] == stringToFind
 	return row[0] == stringToFind
 
-logdata = np.genfromtxt('log_moving_avg.txt', usecols=(5,6), dtype=None)
+logdata = np.genfromtxt('log.txt', usecols=(5,6), dtype=None)
 # logdata = numpy.loadtxt('logdata.txt', usecols=(5,6))
 
 bool_arr = np.array([getStringInRow(row, "accelX:") for row in logdata])
@@ -80,15 +80,15 @@ plt.plot(timestamp, vz)
 
 
 plt.subplot(337)
-plt.axis([0,endTime,-1.5,1.5])
+plt.axis([0,endTime,-1,1])
 plt.plot(timestamp, px)
 
 plt.subplot(338)
-plt.axis([0,endTime,-1.5,1.5])
+plt.axis([0,endTime,-1,1])
 plt.plot(timestamp, py)
 
 plt.subplot(339)
-plt.axis([0,endTime,-1.5,1.5])
+plt.axis([0,endTime,-1,1])
 plt.plot(timestamp, pz)
 
 
