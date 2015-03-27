@@ -177,8 +177,10 @@ public class DataLogActivity extends MyoActivity {
             positionZTextView.setText(String.format("%.3f", getPosition().z()));
 
 
-            String accelDataString = getAccel().x() + " " + getAccel().y() + " " + getAccel().z();
-            wiFiOutputChannel.pingSocket(myo.getName() + ":" + accelDataString);
+            String accelDataString = getPosition().x() + " " + getPosition().y() + " " + getPosition().z();
+            String rotationDataString = getRollValue() + " " + getPitchValue() + " " + getYawValue();
+
+            wiFiOutputChannel.pingSocket(myo.getName() + ":" + accelDataString + " " + rotationDataString);
         }
 
         @Override
