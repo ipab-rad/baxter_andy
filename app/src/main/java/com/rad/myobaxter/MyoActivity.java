@@ -28,7 +28,6 @@ import com.thalmic.myo.scanner.ScanActivity;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import lombok.Data;
@@ -148,52 +147,66 @@ public abstract class MyoActivity extends Activity {
         rollValue = originalRoll - calibratedRoll;
         pitchValue = originalPitch - calibratedPitch;
         yawValue = originalYaw - calibratedYaw;
+        Log.i(TAG, "orientation: roll: " + rollValue);
+        Log.i(TAG, "orientation: pitch: " + pitchValue);
+        Log.i(TAG, "orientation: yaw: " + yawValue);
     }
 
     protected void calculateVelocityAndPositionFromAcceleration(){
-        count+=1;
-//        if(count > AccelSampleData.SAMPLE_SIZE) {
-//            count = 0;
 
-        List<Vector3Sample> movingAverage = accelSampleData.getSamples();
+        List<Vector3Sample> movingAverage = accelSampleData.getMovingAverage();
         if(movingAverage.size() > 2) {
             Vector3Sample latestMovingAverage = movingAverage.get(movingAverage.size() - 1);
-//        double timePeriod = (double) getOriginalAccel().timeDifference()/1000.0;
 
-//            double timePeriod = (double) (latestMovingAverage.getTimestamp() - accelSampleData.getSampleRangeStartTime()) / 1000.0;
-            long previousMovingAvgTimestamp = movingAverage.get(movingAverage.size() - 2).getTimestamp();
-            double timePeriod = (double) (latestMovingAverage.getTimestamp() - previousMovingAvgTimestamp);
-            Log.i(TAG, "Time Period: " + timePeriod);
-            Log.i(TAG, "Timestamp: " + latestMovingAverage.getTimestamp());
-            this.accel.set(latestMovingAverage.getValue());
+            Vector3Sample previousMovingAverage = movingAverage.get(movingAverage.size() - 2);
+            Vector3 differenceVector = new Vector3();
+            differenceVector.set(latestMovingAverage.getValue());
+            differenceVector.subtract(previousMovingAverage.getValue());
+            double threshold = 0.0005;
+//            if(differenceVector.x() > threshold || differenceVector.y() > threshold || differenceVector.z() > threshold) {
+                long previousMovingAvgTimestamp = previousMovingAverage.getTimestamp();
+                double timePeriod = (double) (latestMovingAverage.getTimestamp() - previousMovingAvgTimestamp) / 1000.0;
+                Log.i(TAG, "Time Period: " + timePeriod);
+                Log.i(TAG, "Timestamp: " + latestMovingAverage.getTimestamp());
+                Vector3 accel = new Vector3();
+                accel.set(latestMovingAverage.getValue());
+                Vector3 calAccel = new Vector3();
+                calAccel.set(calibratedAccel.getAccel());
+                convertFromBodyToInertiaFrame(accel);
 
-            Vector3 calAccel = new Vector3();
-            calAccel.set(calibratedAccel.getAccel());
+                double g = 9.80665;
+                accel.multiply(g);
+                calAccel.multiply(g);
+                accel.subtract(calAccel);
+                this.accel.set(accel);
 
-            double g = 9.80665;
-            this.accel.multiply(g);
-            calAccel.multiply(g);
-
-            this.accel.subtract(calAccel);
-
-
-//        Log.i(TAG, "Time Period: " + String.valueOf(timePeriod));
-//        Log.i(TAG, "Timestamp Previous: " + String.valueOf(getOriginalAccel().getPreviousTimestamp()));
-//        Log.i(TAG, "Timestamp Now: " + String.valueOf(getOriginalAccel().getTimestamp()));
-
-            //TODO create filtering window instead of rounding i.e. accel < 0.5  ===  accel = 0
-            double velocityX = velocity.x() + timePeriod * round(accel.x(), 9);
+            double accelX = Math.abs(accel.x()) < 0.1 ? 0 : accel.x();
+//                double accelX = accel.x();
+            double accelY = Math.abs(accel.y()) < 0.1 ? 0 : accel.y();
+//                double accelY = accel.y();
+            double accelZ = Math.abs(accel.z()) < 0.1 ? 0 : accel.z();
+//                double accelZ = accel.z();
+            this.accel.set(new Vector3(accelX, accelY, accelZ));
+            double vx = velocity.x() + timePeriod * round(accelX, 9);
+            double velocityX = accelX == 0 ? vx*0.9: vx;
+//                double velocityX = velocity.x() + timePeriod * round(accelX, 9);
 //            double velocityX = timePeriod * round(accel.x(), 0);
-            double velocityY = velocity.y() + timePeriod * round(accel.y(), 9);
+            double vy = velocity.y() + timePeriod * round(accelY, 9);
+            double velocityY = accelY == 0 ? vy*0.9: vy;
+//                double velocityY = velocity.y() + timePeriod * round(accelY, 9);
 //            double velocityY = timePeriod * round(accel.y(), 0);
-            double velocityZ = velocity.z() + timePeriod * round(accel.z(), 9);
+            double vz = velocity.z() + timePeriod * round(accelZ, 9);
+            double velocityZ = accelZ == 0 ? vz*0.9: vz;
+//                double velocityZ = velocity.z() + timePeriod * round(accelZ, 9);
 //            double velocityZ = timePeriod * round(accel.z(), 0);
-            this.velocity = new Vector3(velocityX, velocityY, velocityZ);
+                this.velocity = new Vector3(velocityX, velocityY, velocityZ);
 
-            double positionX = position.x() + ((timePeriod * velocity.x()) / 1000000.0);
-            double positionY = position.y() + ((timePeriod * velocity.y()) / 1000000.0);
-            double positionZ = position.z() + ((timePeriod * velocity.z()) / 1000000.0);
-            this.position = new Vector3(positionX, positionY, positionZ);
+                double positionX = position.x() + ((timePeriod * velocity.x()));
+                double positionY = position.y() + ((timePeriod * velocity.y()));
+                double positionZ = position.z() + ((timePeriod * velocity.z()));
+                this.position = new Vector3(positionX, positionY, positionZ);
+//            }
+            Log.i(TAG, "logdata timestamp: " + String.valueOf(latestMovingAverage.getTimestamp()));
             Log.i(TAG, "logdata accelX: " + String.format("%.6f", accel.x()));
             Log.i(TAG, "logdata accelY: " + String.format("%.6f", accel.y()));
             Log.i(TAG, "logdata accelZ: " + String.format("%.6f", accel.z()));
@@ -204,7 +217,6 @@ public abstract class MyoActivity extends Activity {
             Log.i(TAG, "logdata positionY: " + String.format("%.6f", position.y()));
             Log.i(TAG, "logdata positionZ: " + String.format("%.6f", position.z()));
         }
-//        }
     }
 
     public void resetSensors(View view){
@@ -213,11 +225,53 @@ public abstract class MyoActivity extends Activity {
 
     //TODO change this to use average of sampled data for accelerometer.
     protected void resetSensors() {
-        getCalibratedAccel().setAccel(getOriginalAccel().getAccel());
-        getCalibratedGyro().setGyro(getOriginalGyro().getGyro());
-        getCalibratedRotation().setRotation(getOriginalRotation().getRotation());
-        position = new Vector3();
-        velocity = new Vector3();
+        List<Vector3Sample> movingAvg = accelSampleData.getMovingAverage();
+        List<Vector3Sample> samples = accelSampleData.getSamples();
+        if(samples.size() > 200) {
+            Vector3 calibratedAccel = new Vector3();
+            for (int i = samples.size() - 200; i < samples.size(); i++) {
+                calibratedAccel.add(samples.get(i).getValue());
+            }
+            calibratedAccel.divide(200);
+
+            getCalibratedAccel().setAccel(calibratedAccel);
+            getCalibratedGyro().setGyro(getOriginalGyro().getGyro());
+            getCalibratedRotation().setRotation(getOriginalRotation().getRotation());
+            accel = new Vector3();
+            position = new Vector3();
+            velocity = new Vector3();
+            showToast("Sensors calibrated");
+        } else {
+            showToast("Not enough samples to calibrate");
+        }
+    }
+
+    private void convertFromBodyToInertiaFrame(Vector3 accel) {
+        Quaternion q = new Quaternion();
+        Quaternion currentQ = new Quaternion();
+        Quaternion currentQInv = new Quaternion();
+        Quaternion diff = new Quaternion();
+        Quaternion diffInv = new Quaternion();
+        Quaternion qinv = new Quaternion();
+        Quaternion result = new Quaternion();
+
+        q.set(getCalibratedRotation().getRotation());
+        qinv.set(getCalibratedRotation().getRotation());
+        qinv.inverse();
+
+        currentQ.set(getOriginalRotation().getRotation());
+        currentQInv.set(getOriginalRotation().getRotation());
+        currentQInv.inverse();
+
+        diff.set(currentQ);
+        diff.multiply(qinv);
+        diffInv.set(diff);
+        diffInv.inverse();
+        Quaternion v = new Quaternion(accel.x(), accel.y(), accel.z(), 0);
+        result.set(diffInv);
+        result.multiply(v);
+        result.multiply(diff);
+        accel.set(new Vector3(result.x(), result.y(), result.z()));
     }
 
     public static double round(double value, int places) {
