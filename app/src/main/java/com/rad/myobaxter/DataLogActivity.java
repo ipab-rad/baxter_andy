@@ -119,25 +119,25 @@ public class DataLogActivity extends MyoActivity {
                             break;
                     }
                     poseTextView.setText(getString(restTextId));
-                    wiFiOutputChannel.pingSocket("gesture " + getString(restTextId));
+                    wiFiOutputChannel.sendGesture(myo, getString(restTextId).toLowerCase());
                     break;
                 case FIST:
                     resetSensors();
                     showToast(getString(R.string.reset));
                     poseTextView.setText(getString(R.string.pose_fist));
-                    wiFiOutputChannel.pingSocket("gesture fist");
+                    wiFiOutputChannel.sendGesture(myo, "fist");
                     break;
                 case WAVE_IN:
                     poseTextView.setText(getString(R.string.pose_wavein));
-                    wiFiOutputChannel.pingSocket("gesture wave_in");
+                    wiFiOutputChannel.sendGesture(myo, "wave_in");
                     break;
                 case WAVE_OUT:
                     poseTextView.setText(getString(R.string.pose_waveout));
-                    wiFiOutputChannel.pingSocket("gesture wave_out");
+                    wiFiOutputChannel.sendGesture(myo, "wave_out");
                     break;
                 case FINGERS_SPREAD:
                     poseTextView.setText(getString(R.string.pose_fingersspread));
-                    wiFiOutputChannel.pingSocket("gesture spread");
+                    wiFiOutputChannel.sendGesture(myo, "spread");
                     break;
             }
 
@@ -182,7 +182,7 @@ public class DataLogActivity extends MyoActivity {
 
 
             String accelDataString = getAccel().x() + " " + getAccel().y() + " " + getAccel().z();
-            wiFiOutputChannel.pingSocket(accelDataString);
+            wiFiOutputChannel.pingSocket(myo.getName() + ":" + accelDataString);
         }
 
         @Override

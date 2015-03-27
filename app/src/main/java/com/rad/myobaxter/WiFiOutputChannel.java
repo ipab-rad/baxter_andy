@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.thalmic.myo.Myo;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -110,19 +112,19 @@ public class WiFiOutputChannel implements SensorEventListener {
         }
     }
 
-    private void sendGeture(String gesture){
-//        pingSocket("gesture:" + gesture);
+    public void sendGesture(Myo myo, String gesture){
+        Log.v("Hack", "************* Myo: " + myo.getName() + " " + gesture);
+        pingSocket(myo.getName() + ":gesture " + gesture);
     }
 
     public void pingSocket(final String message){
 
         // Rate limit
         long elapsed = System.currentTimeMillis() - time;
-        if(!message.startsWith("gesture") || elapsed < 100){
+        if(!message.contains("gesture") && elapsed < 100){
             return;
         }
         time = System.currentTimeMillis();
-
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -170,28 +172,6 @@ public class WiFiOutputChannel implements SensorEventListener {
             e.printStackTrace();
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
