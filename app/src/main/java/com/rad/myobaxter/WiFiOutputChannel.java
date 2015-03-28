@@ -70,7 +70,7 @@ public class WiFiOutputChannel implements SensorEventListener {
                         Log.v("Hack", "Socket opened");
                     } catch (Exception e) {
                         Log.v("Hack", "Error", e);
-                        System.exit(0);
+//                        System.exit(0);
                     }
                 }
             });

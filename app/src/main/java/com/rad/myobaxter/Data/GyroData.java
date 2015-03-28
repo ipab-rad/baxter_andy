@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class GyroData {
-    private Vector3 gyro;
+    private Vector3 gyro = new Vector3();
     private static final GyroData gyroData = new GyroData();
     private final OriginalGyro originalGyro = OriginalGyro.getInstance();
     private final CalibratedGyro calibratedGyro = CalibratedGyro.getInstance();
@@ -21,6 +21,7 @@ public class GyroData {
     public void setGyroData(long timestamp, Vector3 gyro){
         originalGyro.setTimestamp(timestamp);
         originalGyro.setGyro(gyro);
+        this.gyro = gyro;
         if(getCalibratedGyro().getGyro() == null){
             getCalibratedGyro().setTimestamp(timestamp);
             getCalibratedGyro().setGyro(gyro);

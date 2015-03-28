@@ -50,6 +50,7 @@ public class DataLogActivity extends MyoActivity {
 
     private boolean enabled = false;
     private long gestureStartTime;
+
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {

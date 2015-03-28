@@ -15,9 +15,9 @@ import lombok.Data;
 public class AccelerometerData {
     private static final double ZERO_ACCEL_THRESHOLD = 0.1;
     private static final double VELOCITY_DEGRADER = 0.9;
-    private Vector3 acceleration;
-    private Vector3 velocity;
-    private Vector3 position;
+    private Vector3 acceleration = new Vector3();
+    private Vector3 velocity = new Vector3();
+    private Vector3 position = new Vector3();
     private final double g = 9.80665;
     private static final AccelerometerData accelerometerData = new AccelerometerData();
     private final OriginalAccel originalAccel = OriginalAccel.getInstance();
@@ -51,7 +51,7 @@ public class AccelerometerData {
         List<Vector3Sample> movingAverage = accelSampleData.getMovingAverage();
         if(movingAverage.size() > 2) {
             Vector3Sample latestMovingAverage = movingAverage.get(movingAverage.size() - 1);
-            double timePeriod = accelSampleData.milliSecondsBetweenCurrentAndLastSample();
+            double timePeriod = (double) accelSampleData.milliSecondsBetweenCurrentAndLastSample()/1000.0;
             Vector3 accel = new Vector3(latestMovingAverage.getValue());
             accel.subtract(calibratedAccel.getAccel());
             accel.multiply(g);
@@ -63,6 +63,7 @@ public class AccelerometerData {
         double accelerationX = Math.abs(accel.x()) < ZERO_ACCEL_THRESHOLD ? 0 : accel.x();
         double accelerationY = Math.abs(accel.y()) < ZERO_ACCEL_THRESHOLD ? 0 : accel.y();
         double accelerationZ = Math.abs(accel.z()) < ZERO_ACCEL_THRESHOLD ? 0 : accel.z();
+        acceleration = new Vector3(accelerationX, accelerationY, accelerationZ);
 
         double vx = velocity.x() + timePeriod * accelerationX;
         double velocityX = accelerationX == 0 ? vx * VELOCITY_DEGRADER : vx;
@@ -70,14 +71,12 @@ public class AccelerometerData {
         double velocityY = accelerationY == 0 ? vy * VELOCITY_DEGRADER : vy;
         double vz = velocity.z() + timePeriod * accelerationZ;
         double velocityZ = accelerationZ == 0 ? vz * VELOCITY_DEGRADER : vz;
+        velocity = new Vector3(velocityX, velocityY, velocityZ);
 
         double positionX = position.x() + ((timePeriod * velocity.x()));
         double positionY = position.y() + ((timePeriod * velocity.y()));
         double positionZ = position.z() + ((timePeriod * velocity.z()));
-
-        this.acceleration = new Vector3(accelerationX, accelerationY, accelerationZ);
-        this.velocity = new Vector3(velocityX, velocityY, velocityZ);
-        this.position = new Vector3(positionX, positionY, positionZ);
+        position = new Vector3(positionX, positionY, positionZ);
     }
 
     public String positionDataAsString(){

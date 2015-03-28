@@ -11,9 +11,9 @@ import lombok.Data;
  */
 @Data
 public class OrientationData {
-    private float roll;
-    private float pitch;
-    private float yaw;
+    private float roll = 0;
+    private float pitch = 0;
+    private float yaw = 0;
     private OriginalRotation originalRotation = OriginalRotation.getInstance();
     private CalibratedRotation calibratedRotation = CalibratedRotation.getInstance();
     private static OrientationData orientationData = new OrientationData();
