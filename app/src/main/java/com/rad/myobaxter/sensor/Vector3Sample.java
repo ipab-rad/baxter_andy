@@ -1,4 +1,4 @@
-package com.rad.myobaxter.Data;
+package com.rad.myobaxter.sensor;
 
 import com.thalmic.myo.Vector3;
 

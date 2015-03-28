@@ -8,10 +8,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import com.thalmic.myo.Myo;
 
@@ -41,38 +37,9 @@ public class WiFiOutputChannel implements SensorEventListener {
 
     protected void init(Activity activity) {
         this.activity = activity;
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-
         mSensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-
-  /*      Button spreadButton = (Button) findViewById(R.id.finger_spread_button);
-        spreadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendGeture("spread");
-            }
-        });
-
-        Button gripButton = (Button) findViewById(R.id.grip_button);
-        gripButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendGeture("grip");
-            }
-        });
-
-        Button waveButton = (Button) findViewById(R.id.wave_button);
-        waveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendGeture("wave");
-            }
-        });
-*/
         v = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
-
         openSocket();
     }
 

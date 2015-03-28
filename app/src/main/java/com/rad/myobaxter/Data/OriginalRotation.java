@@ -1,4 +1,4 @@
-package com.rad.myobaxter.Data;
+package com.rad.myobaxter.data;
 
 import com.thalmic.myo.Quaternion;
 

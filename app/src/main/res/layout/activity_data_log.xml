@@ -397,7 +397,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/resetSensorsButton"
         android:text="@string/reset_sensors"
-        android:onClick="resetSensors"
+        android:onClick="calibrateSensors"
         android:layout_row="20"
         android:layout_column="0"/>
 </GridLayout>

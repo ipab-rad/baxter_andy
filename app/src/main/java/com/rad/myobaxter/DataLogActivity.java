@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.rad.myobaxter.Data.AccelSampleData;
+import com.rad.myobaxter.utils.LogUtils;
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
@@ -112,10 +112,11 @@ public class DataLogActivity extends MyoActivity {
         // represented as a quaternion.
         @Override
         public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-            calculateOffsetRotation(myo, timestamp, rotation);
-            rollTextView.setText(String.format("%.0f", getRollValue()));
-            pitchTextView.setText(String.format("%.0f", getPitchValue()));
-            yawTextView.setText(String.format("%.0f", getYawValue()));
+            getOrientationData().setOrientationData(timestamp, rotation);
+            getOrientationData().calculateOffsetRotation(myo);
+            rollTextView.setText(String.format("%.0f", getOrientationData().getRoll()));
+            pitchTextView.setText(String.format("%.0f", getOrientationData().getPitch()));
+            yawTextView.setText(String.format("%.0f", getOrientationData().getYaw()));
         }
 
         // onPose() is called whenever a Myo provides a new pose.
@@ -165,9 +166,8 @@ public class DataLogActivity extends MyoActivity {
                     break;
                 case FIST:
                     if(!enabled) {
-                        resetSensors();
+                        calibrateSensors(getCurrentFocus());
                         wiFiOutputChannel.sendCommand(myo, "calibrated");
-                        showToast(getString(R.string.reset));
                     } else {
                         wiFiOutputChannel.sendGesture(myo, "fist");
                     }
@@ -188,11 +188,6 @@ public class DataLogActivity extends MyoActivity {
                     break;
             }
 
-            //TODO move elsewhere
-            // Tell the Myo to stay unlocked until told otherwise. We do that here so you can
-            // hold the poses without the Myo becoming locked.
-            myo.unlock(Myo.UnlockType.HOLD);
-
             if (pose != Pose.UNKNOWN && pose != Pose.REST) {
                 // Notify the Myo that the pose has resulted in an action, in this case changing
                 // the text on the screen. The Myo will vibrate.
@@ -200,53 +195,40 @@ public class DataLogActivity extends MyoActivity {
             }
         }
 
+        //TODO turn off if not using
         @Override
         public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
-            getOriginalAccel().setTimestamp(timestamp);
-            getOriginalAccel().setAccel(accel);
-            AccelSampleData accelSampleData = getAccelSampleData();
 
-            convertFromBodyToInertiaFrame(accel);
-            if(getCalibratedAccel().getAccel() == null){
-                getCalibratedAccel().setTimestamp(timestamp);
-                getCalibratedAccel().setAccel(accel);
-            }
+            getAccelerometerData().setAccelerometerData(timestamp, accel);
+            getAccelSampleData().addSample(accel, timestamp);
+            getAccelerometerData().calculateVelocityAndPositionFromAcceleration(getAccelSampleData());
+            LogUtils.logAccelerometerData(TAG, timestamp, getAccelerometerData());
 
-            accelSampleData.addSample(accel, getCalibratedAccel().getAccel(), timestamp);
+            accelXTextView.setText(String.format("%.3f", getAccelerometerData().getAcceleration().x()));
+            accelYTextView.setText(String.format("%.3f", getAccelerometerData().getAcceleration().y()));
+            accelZTextView.setText(String.format("%.3f", getAccelerometerData().getAcceleration().z()));
 
-            //TODO turn off if not using
-            calculateVelocityAndPositionFromAcceleration();
-            accelXTextView.setText(String.format("%.3f", getAccel().x()));
-            accelYTextView.setText(String.format("%.3f", getAccel().y()));
-            accelZTextView.setText(String.format("%.3f", getAccel().z()));
+            velocityXTextView.setText(String.format("%.3f", getAccelerometerData().getVelocity().x()));
+            velocityYTextView.setText(String.format("%.3f", getAccelerometerData().getVelocity().y()));
+            velocityZTextView.setText(String.format("%.3f", getAccelerometerData().getVelocity().z()));
 
-            velocityXTextView.setText(String.format("%.3f", getVelocity().x()));
-            velocityYTextView.setText(String.format("%.3f", getVelocity().y()));
-            velocityZTextView.setText(String.format("%.3f", getVelocity().z()));
-
-            positionXTextView.setText(String.format("%.3f", getPosition().x()));
-            positionYTextView.setText(String.format("%.3f", getPosition().y()));
-            positionZTextView.setText(String.format("%.3f", getPosition().z()));
+            positionXTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().x()));
+            positionYTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().y()));
+            positionZTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().z()));
 
 
-            String accelDataString = getPosition().x() + " " + getPosition().y() + " " + getPosition().z();
-            String rotationDataString = getRollValue() + " " + getPitchValue() + " " + getYawValue();
-
+            String accelDataString = getAccelerometerData().positionDataAsString();
+            String rotationDataString = getOrientationData().rotationDataAsString();
             wiFiOutputChannel.pingSocket(myo.getName() + ":" + accelDataString + " " + rotationDataString);
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
-            getOriginalGyro().setTimestamp(timestamp);
-            getOriginalGyro().setGyro(gyro);
-            if(getCalibratedGyro().getGyro() == null){
-                getCalibratedGyro().setTimestamp(timestamp);
-                getCalibratedGyro().setGyro(gyro);
-            }
-            gyro.subtract(getCalibratedGyro().getGyro());
-            gyroXTextView.setText(String.format("%.0f", gyro.x()));
-            gyroYTextView.setText(String.format("%.0f", gyro.y()));
-            gyroZTextView.setText(String.format("%.0f", gyro.z()));
+            getGyroData().setGyroData(timestamp, gyro);
+            getGyroData().offsetGyro();
+            gyroXTextView.setText(String.format("%.0f", getGyroData().getGyro().x()));
+            gyroYTextView.setText(String.format("%.0f", getGyroData().getGyro().y()));
+            gyroZTextView.setText(String.format("%.0f", getGyroData().getGyro().z()));
         }
     };
     private long gestureStartTime;
@@ -282,8 +264,6 @@ public class DataLogActivity extends MyoActivity {
         wiFiOutputChannel.init(this);
     }
 
-    // This is a utility function implemented for this sample that maps a Myo to a unique ID starting at 1.
-    // It does so by looking for the Myo object in mKnownMyos, which onAttach() adds each Myo into as it is attached.
     private int identifyMyo(Myo myo) {
         return mKnownMyos.indexOf(myo) + 1;
     }

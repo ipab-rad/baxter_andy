@@ -70,11 +70,13 @@ public class HelloWorldActivity extends MyoActivity {
         // represented as a quaternion.
         @Override
         public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-            calculateOffsetRotation(myo, timestamp, rotation);
+            getOrientationData().setOrientationData(timestamp, rotation);
+            getOrientationData().calculateOffsetRotation(myo);
+
             // Next, we apply a rotation to the text view using the roll, pitch, and yaw.
-            mTextView.setRotation(getRollValue());
-            mTextView.setRotationX(getPitchValue());
-            mTextView.setRotationY(getYawValue());
+            mTextView.setRotation(getOrientationData().getRoll());
+            mTextView.setRotationX(getOrientationData().getPitch());
+            mTextView.setRotationY(getOrientationData().getYaw());
         }
 
         // onPose() is called whenever a Myo provides a new pose.
@@ -100,10 +102,7 @@ public class HelloWorldActivity extends MyoActivity {
                     mTextView.setText(getString(restTextId));
                     break;
                 case FIST:
-                    getCalibratedAccel().setAccel(getOriginalAccel().getAccel());
-                    getCalibratedGyro().setGyro(getOriginalGyro().getGyro());
-                    getCalibratedRotation().setRotation(getOriginalRotation().getRotation());
-                    showToast(getString(R.string.reset));
+                    calibrateSensors(getCurrentFocus());
                     mTextView.setText(getString(R.string.pose_fist));
                     break;
                 case WAVE_IN:
@@ -120,28 +119,20 @@ public class HelloWorldActivity extends MyoActivity {
             myo.unlock(Myo.UnlockType.HOLD);
 
             if (pose != Pose.UNKNOWN && pose != Pose.REST) {
-//                // Tell the Myo to stay unlocked until told otherwise. We do that here so you can
-//                // hold the poses without the Myo becoming locked.
-//                myo.unlock(Myo.UnlockType.HOLD);
-//
-//                // Notify the Myo that the pose has resulted in an action, in this case changing
-//                // the text on the screen. The Myo will vibrate.
+                // Notify the Myo that the pose has resulted in an action, in this case changing
+                // the text on the screen. The Myo will vibrate.
                 myo.notifyUserAction();
-            } else {
-//                // Tell the Myo to stay unlocked only for a short period. This allows the Myo to
-//                // stay unlocked while poses are being performed, but lock after inactivity.
-//                myo.unlock(Myo.UnlockType.TIMED);
             }
         }
 
         @Override
         public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
-            getOriginalAccel().setAccel(accel);
+            getAccelerometerData().setAccelerometerData(timestamp, accel);
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
-            getOriginalGyro().setGyro(gyro);
+            getGyroData().setGyroData(timestamp, gyro);
         }
 
     };

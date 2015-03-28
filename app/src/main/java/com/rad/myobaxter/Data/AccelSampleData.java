@@ -1,5 +1,6 @@
-package com.rad.myobaxter.Data;
+package com.rad.myobaxter.data;
 
+import com.rad.myobaxter.sensor.Vector3Sample;
 import com.thalmic.myo.Vector3;
 
 import java.util.ArrayList;
@@ -18,19 +19,23 @@ public class AccelSampleData {
     public static int CALIBRATED_SAMPLE_SIZE = 200;
     private List<Vector3Sample> samples;
     private List<Vector3Sample> movingAverage;
+    private static final AccelSampleData accelSampleData = new AccelSampleData();
+
+    public static AccelSampleData getInstance(){
+        return accelSampleData;
+    }
 
     public AccelSampleData(){
         samples = new ArrayList<Vector3Sample>();
         movingAverage = new ArrayList<Vector3Sample>();
     }
 
-    public void addSample(Vector3 accel, Vector3 calAccel, long timestamp) {
+    public void addSample(Vector3 accel, long timestamp) {
         if(startTime == 0){
             startTime = timestamp;
             sampleRangeStartTime = timestamp;
         }
         Vector3Sample sample = new Vector3Sample(accel, timestamp);
-        Vector3Sample calAccelSample = new Vector3Sample(calAccel, timestamp);
         samples.add(sample);
         addNewMovingAverage(accel, timestamp);
         if(samples.size() > SAMPLE_SIZE){
@@ -83,5 +88,12 @@ public class AccelSampleData {
         Vector3Sample avgSample;
         avgSample = new Vector3Sample(accel, timestamp);
         movingAverage.add(avgSample);
+    }
+
+
+    public long milliSecondsBetweenCurrentAndLastSample() {
+        Vector3Sample latestMovingAverage = movingAverage.get(movingAverage.size() - 1);
+        Vector3Sample previousMovingAverage = movingAverage.get(movingAverage.size() - 2);
+        return latestMovingAverage.getTimestamp() - previousMovingAverage.getTimestamp();
     }
 }
