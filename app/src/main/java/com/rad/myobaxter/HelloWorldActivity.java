@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.rad.myobaxter.publish.SimplePublisherNode;
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
@@ -12,6 +13,11 @@ import com.thalmic.myo.Pose;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
+
+import org.ros.address.InetAddressFactory;
+import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMain;
+import org.ros.node.NodeMainExecutor;
 
 public class HelloWorldActivity extends MyoActivity {
     private static final String TAG = "HelloWorldActivity";
@@ -136,6 +142,10 @@ public class HelloWorldActivity extends MyoActivity {
         }
     };
 
+    public HelloWorldActivity() {
+        super("MyoBaxterHellowWorld");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,5 +154,15 @@ public class HelloWorldActivity extends MyoActivity {
         mLockStateView = (TextView) findViewById(R.id.lock_state);
         mTextView = (TextView) findViewById(R.id.text);
         initializeHub(mListener);
+    }
+
+    @Override
+    protected void init(NodeMainExecutor nodeMainExecutor) {
+        NodeMain node = new SimplePublisherNode(0);
+
+        NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
+        nodeConfiguration.setMasterUri(getMasterUri());
+
+        nodeMainExecutor.execute(node, nodeConfiguration);
     }
 }

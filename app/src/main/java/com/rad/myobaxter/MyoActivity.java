@@ -1,6 +1,5 @@
 package com.rad.myobaxter;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
@@ -19,10 +18,12 @@ import com.thalmic.myo.DeviceListener;
 import com.thalmic.myo.Hub;
 import com.thalmic.myo.scanner.ScanActivity;
 
+import org.ros.android.RosActivity;
+
 import lombok.Data;
 
 @Data
-public abstract class MyoActivity extends Activity {
+public abstract class MyoActivity extends RosActivity {
 
     private static final String TAG = "MyoActivity";
     private final double ZERO_ACCEL_THRESHOLD = 0.1;
@@ -36,6 +37,10 @@ public abstract class MyoActivity extends Activity {
     private AccelerometerData accelerometerData = AccelerometerData.getInstance();
     private OrientationData orientationData = OrientationData.getInstance();
     private GyroData gyroData = GyroData.getInstance();
+
+    public MyoActivity(String myoBaxter) {
+        super(myoBaxter, myoBaxter);
+    }
 
     protected void initializeHub(DeviceListener mListener) {
         this.mListener = mListener;

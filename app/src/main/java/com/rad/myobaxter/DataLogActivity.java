@@ -5,6 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.rad.myobaxter.publish.CalibratePublisherNode;
+import com.rad.myobaxter.publish.EnablePublisherNode;
+import com.rad.myobaxter.publish.GesturePublisherNode;
+import com.rad.myobaxter.publish.OrientationPublisherNode;
+import com.rad.myobaxter.publish.PositionPublisherNode;
+import com.rad.myobaxter.publish.PublisherNode;
 import com.rad.myobaxter.utils.LogUtils;
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
@@ -15,7 +21,12 @@ import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
 
+import org.ros.address.InetAddressFactory;
+import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMainExecutor;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class DataLogActivity extends MyoActivity {
 
@@ -46,11 +57,17 @@ public class DataLogActivity extends MyoActivity {
     private TextView gyroYTextView;
     private TextView gyroZTextView;
 
-    private WiFiOutputChannel wiFiOutputChannel;
-
     private boolean enabled = false;
     private long gestureStartTime;
+    private List<PublisherNode> positionPublisherNodeList = new ArrayList<PublisherNode>();
+    private List<PublisherNode> orientationPublisherNodeList = new ArrayList<PublisherNode>();
+    private List<PublisherNode> enablePublisherNodeList = new ArrayList<PublisherNode>();
+    private List<PublisherNode> calibratePublisherNodeList = new ArrayList<PublisherNode>();
+    private List<PublisherNode> gesturePublisherNodeList = new ArrayList<PublisherNode>();
 
+    public DataLogActivity() {
+        super("MyoBaxterDataLog");
+    }
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {
@@ -131,29 +148,28 @@ public class DataLogActivity extends MyoActivity {
                             break;
                     }
                     poseTextView.setText(getString(restTextId));
-                    wiFiOutputChannel.sendGesture(myo, getString(restTextId).toLowerCase());
                     break;
                 case FIST:
                     if(enabled) {
-                        wiFiOutputChannel.sendGesture(myo, "fist");
+                        gesturePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.pose_fist));
                     } else {
                         calibrateSensors(getCurrentFocus());
-                        wiFiOutputChannel.sendCommand(myo, "calibrated");
+                        calibratePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.calibrated));
                     }
                     poseTextView.setText(getString(R.string.pose_fist));
                     break;
                 case WAVE_IN:
+                    gesturePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.pose_wavein));
                     poseTextView.setText(getString(R.string.pose_wavein));
-                    wiFiOutputChannel.sendGesture(myo, "wave_in");
                     break;
                 case WAVE_OUT:
+                    gesturePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.pose_waveout));
                     poseTextView.setText(getString(R.string.pose_waveout));
-                    wiFiOutputChannel.sendGesture(myo, "wave_out");
                     break;
                 case FINGERS_SPREAD:
                     poseTextView.setText(getString(R.string.pose_fingersspread));
                     gestureStartTime = timestamp;
-                    wiFiOutputChannel.sendGesture(myo, "spread");
+                    gesturePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.pose_fingersspread));
                     break;
             }
 
@@ -195,11 +211,6 @@ public class DataLogActivity extends MyoActivity {
             positionXTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().x()));
             positionYTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().y()));
             positionZTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().z()));
-
-
-            String accelDataString = getAccelerometerData().positionDataAsString();
-            String rotationDataString = getOrientationData().rotationDataAsString();
-            wiFiOutputChannel.pingSocket(myo.getName() + ":" + accelDataString + " " + rotationDataString);
         }
 
         @Override
@@ -238,9 +249,34 @@ public class DataLogActivity extends MyoActivity {
         gyroZTextView = (TextView) findViewById(R.id.gyroZValue);
 
         initializeHub(mListener);
+    }
 
-        wiFiOutputChannel = new WiFiOutputChannel();
-        wiFiOutputChannel.init(this);
+    @Override
+    protected void init(NodeMainExecutor nodeMainExecutor) {
+        orientationPublisherNodeList.add(new OrientationPublisherNode(0));
+        orientationPublisherNodeList.add(new OrientationPublisherNode(1));
+        positionPublisherNodeList.add(new PositionPublisherNode(0));
+        positionPublisherNodeList.add(new PositionPublisherNode(1));
+        enablePublisherNodeList.add(new EnablePublisherNode(0));
+        enablePublisherNodeList.add(new EnablePublisherNode(1));
+        calibratePublisherNodeList.add(new CalibratePublisherNode(0));
+        calibratePublisherNodeList.add(new CalibratePublisherNode(1));
+        gesturePublisherNodeList.add(new GesturePublisherNode(0));
+        gesturePublisherNodeList.add(new GesturePublisherNode(1));
+
+        NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
+        nodeConfiguration.setMasterUri(getMasterUri());
+
+        nodeMainExecutor.execute(orientationPublisherNodeList.get(0), nodeConfiguration);
+        nodeMainExecutor.execute(orientationPublisherNodeList.get(1), nodeConfiguration);
+        nodeMainExecutor.execute(positionPublisherNodeList.get(0), nodeConfiguration);
+        nodeMainExecutor.execute(positionPublisherNodeList.get(1), nodeConfiguration);
+        nodeMainExecutor.execute(enablePublisherNodeList.get(0), nodeConfiguration);
+        nodeMainExecutor.execute(enablePublisherNodeList.get(1), nodeConfiguration);
+        nodeMainExecutor.execute(calibratePublisherNodeList.get(0), nodeConfiguration);
+        nodeMainExecutor.execute(calibratePublisherNodeList.get(1), nodeConfiguration);
+        nodeMainExecutor.execute(gesturePublisherNodeList.get(0), nodeConfiguration);
+        nodeMainExecutor.execute(gesturePublisherNodeList.get(1), nodeConfiguration);
     }
 
     private int identifyMyo(Myo myo) {
@@ -273,10 +309,10 @@ public class DataLogActivity extends MyoActivity {
         enabled = !enabled;
         if(enabled) {
             showToast(getString(R.string.enable));
-            wiFiOutputChannel.sendCommand(myo, getString(R.string.enable));
+            enablePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.enable));
         } else {
             showToast(getString(R.string.disable));
-            wiFiOutputChannel.sendCommand(myo, getString(R.string.disable));
+            enablePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.disable));
         }
         resetTimer();
     }
