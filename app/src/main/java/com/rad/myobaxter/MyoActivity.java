@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rad.myobaxter.data.AccelSampleData;
@@ -32,8 +31,6 @@ public abstract class MyoActivity extends Activity {
 
     private Toast mToast;
     private DeviceListener mListener;
-
-    private TextView titleTextView;
 
     private AccelSampleData accelSampleData = AccelSampleData.getInstance();
     private AccelerometerData accelerometerData = AccelerometerData.getInstance();

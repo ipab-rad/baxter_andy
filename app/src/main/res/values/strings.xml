@@ -51,5 +51,7 @@
     <string name="expect_one_myo">One Myo</string>
     <string name="expect_two_myo">Two Myos</string>
     <string name="not_enough_samples">Not enough samples to calibrate</string>
+    <string name="enable">enable</string>
+    <string name="disable">disable</string>
 
 </resources>

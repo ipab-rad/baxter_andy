@@ -66,19 +66,6 @@ public class HelloWorldActivity extends MyoActivity {
             mLockStateView.setText(R.string.locked);
         }
 
-        // onOrientationData() is called whenever a Myo provides its current orientation,
-        // represented as a quaternion.
-        @Override
-        public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-            getOrientationData().setOrientationData(timestamp, rotation);
-            getOrientationData().calculateOffsetRotation(myo);
-
-            // Next, we apply a rotation to the text view using the roll, pitch, and yaw.
-            mTextView.setRotation(getOrientationData().getRoll());
-            mTextView.setRotationX(getOrientationData().getPitch());
-            mTextView.setRotationY(getOrientationData().getYaw());
-        }
-
         // onPose() is called whenever a Myo provides a new pose.
         @Override
         public void onPose(Myo myo, long timestamp, Pose pose) {
@@ -125,6 +112,19 @@ public class HelloWorldActivity extends MyoActivity {
             }
         }
 
+        // onOrientationData() is called whenever a Myo provides its current orientation,
+        // represented as a quaternion.
+        @Override
+        public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
+            getOrientationData().setOrientationData(timestamp, rotation);
+            getOrientationData().calculateOffsetRotation(myo);
+
+            // Next, we apply a rotation to the text view using the roll, pitch, and yaw.
+            mTextView.setRotation(getOrientationData().getRoll());
+            mTextView.setRotationX(getOrientationData().getPitch());
+            mTextView.setRotationY(getOrientationData().getYaw());
+        }
+
         @Override
         public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
             getAccelerometerData().setAccelerometerData(timestamp, accel);
@@ -134,7 +134,6 @@ public class HelloWorldActivity extends MyoActivity {
         public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
             getGyroData().setGyroData(timestamp, gyro);
         }
-
     };
 
     @Override

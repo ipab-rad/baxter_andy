@@ -26,7 +26,6 @@ public class DataLogActivity extends MyoActivity {
 
     private ArrayList<Myo> mKnownMyos = new ArrayList<Myo>();
 
-    private TextView titleTextView;
     private TextView mLockStateView;
     private TextView connectedTextView;
     private TextView armSyncTextView;
@@ -50,6 +49,7 @@ public class DataLogActivity extends MyoActivity {
     private WiFiOutputChannel wiFiOutputChannel;
 
     private boolean enabled = false;
+    private long gestureStartTime;
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {
@@ -108,44 +108,12 @@ public class DataLogActivity extends MyoActivity {
             mLockStateView.setText(R.string.locked);
         }
 
-        // onOrientationData() is called whenever a Myo provides its current orientation,
-        // represented as a quaternion.
-        @Override
-        public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-            getOrientationData().setOrientationData(timestamp, rotation);
-            getOrientationData().calculateOffsetRotation(myo);
-            rollTextView.setText(String.format("%.0f", getOrientationData().getRoll()));
-            pitchTextView.setText(String.format("%.0f", getOrientationData().getPitch()));
-            yawTextView.setText(String.format("%.0f", getOrientationData().getYaw()));
-        }
-
         // onPose() is called whenever a Myo provides a new pose.
         @Override
         public void onPose(Myo myo, long timestamp, Pose pose) {
+            toggleEnableOnHeldFingerSpreadPose(myo, timestamp);
             // Handle the cases of the Pose enumeration, and change the text of the text view
             // based on the pose we receive.
-
-            boolean lessThanASecond = (timestamp - gestureStartTime) < 1000;
-            boolean greaterThanASecond = (timestamp - gestureStartTime) > 1000;
-            boolean timerInProgress = gestureStartTime != 0;
-
-            if(lessThanASecond && timerInProgress) {
-                gestureStartTime = 0;
-            }
-
-            if(greaterThanASecond && timerInProgress){
-                enabled = !enabled;
-
-                if(enabled) {
-                    showToast("enabled");
-                    wiFiOutputChannel.sendCommand(myo, "enable");
-                } else {
-                    showToast("disabled");
-                    wiFiOutputChannel.sendCommand(myo, "disable");
-                }
-                gestureStartTime = 0;
-            }
-
             switch (pose) {
                 case UNKNOWN:
                     poseTextView.setText(getString(R.string.unknown));
@@ -165,11 +133,11 @@ public class DataLogActivity extends MyoActivity {
                     wiFiOutputChannel.sendGesture(myo, getString(restTextId).toLowerCase());
                     break;
                 case FIST:
-                    if(!enabled) {
+                    if(enabled) {
+                        wiFiOutputChannel.sendGesture(myo, "fist");
+                    } else {
                         calibrateSensors(getCurrentFocus());
                         wiFiOutputChannel.sendCommand(myo, "calibrated");
-                    } else {
-                        wiFiOutputChannel.sendGesture(myo, "fist");
                     }
                     poseTextView.setText(getString(R.string.pose_fist));
                     break;
@@ -193,6 +161,17 @@ public class DataLogActivity extends MyoActivity {
                 // the text on the screen. The Myo will vibrate.
                 myo.notifyUserAction();
             }
+        }
+
+        // onOrientationData() is called whenever a Myo provides its current orientation,
+        // represented as a quaternion.
+        @Override
+        public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
+            getOrientationData().setOrientationData(timestamp, rotation);
+            getOrientationData().calculateOffsetRotation(myo);
+            rollTextView.setText(String.format("%.0f", getOrientationData().getRoll()));
+            pitchTextView.setText(String.format("%.0f", getOrientationData().getPitch()));
+            yawTextView.setText(String.format("%.0f", getOrientationData().getYaw()));
         }
 
         //TODO turn off if not using
@@ -231,7 +210,6 @@ public class DataLogActivity extends MyoActivity {
             gyroZTextView.setText(String.format("%.0f", getGyroData().getGyro().z()));
         }
     };
-    private long gestureStartTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -266,5 +244,39 @@ public class DataLogActivity extends MyoActivity {
 
     private int identifyMyo(Myo myo) {
         return mKnownMyos.indexOf(myo) + 1;
+    }
+
+    private void toggleEnableOnHeldFingerSpreadPose(Myo myo, long timestamp) {
+        if(isTimerInProgress()){
+            if(timerLessThanThreshold(timestamp, 3000)) {
+                resetTimer();
+            } else {
+                toggleEnable(myo);
+            }
+        }
+    }
+
+    private boolean isTimerInProgress(){
+        return gestureStartTime != 0;
+    }
+
+    private boolean timerLessThanThreshold(long timestamp, int i) {
+        return timestamp - gestureStartTime < 3000;
+    }
+
+    private void resetTimer() {
+        gestureStartTime = 0;
+    }
+
+    private void toggleEnable(Myo myo) {
+        enabled = !enabled;
+        if(enabled) {
+            showToast(getString(R.string.enable));
+            wiFiOutputChannel.sendCommand(myo, getString(R.string.enable));
+        } else {
+            showToast(getString(R.string.disable));
+            wiFiOutputChannel.sendCommand(myo, getString(R.string.disable));
+        }
+        resetTimer();
     }
 }
