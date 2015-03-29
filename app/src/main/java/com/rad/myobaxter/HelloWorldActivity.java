@@ -2,8 +2,12 @@ package com.rad.myobaxter;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
+import com.rad.myobaxter.data.AccelerometerData;
+import com.rad.myobaxter.data.GyroData;
+import com.rad.myobaxter.data.OrientationData;
 import com.rad.myobaxter.publish.SimplePublisherNode;
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
@@ -28,6 +32,21 @@ public class HelloWorldActivity extends MyoActivity {
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
     private DeviceListener mListener = new AbstractDeviceListener() {
+
+        @Override
+        public void onAttach(Myo myo, long timestamp) {
+            // The object for a Myo is unique - in other words, it's safe to compare two Myo references to
+            // see if they're referring to the same Myo.
+            // Add the Myo object to our list of known Myo devices. This list is used to implement identifyMyo() below so
+            // that we can give each Myo a nice short identifier.
+            getMKnownMyos().add(myo);
+            OrientationData orientationData = new OrientationData();
+            getAccelerometerDataList().add(new AccelerometerData(orientationData));
+            getOrientationDataList().add(orientationData);
+            getGyroDataList().add(new GyroData());
+            // Now that we've added it to our list, get our short ID for it and print it out.
+            Log.i(TAG, "Attached to " + myo.getMacAddress() + ", now known as Myo " + identifyMyo(myo) + ".");
+        }
 
         // onConnect() is called whenever a Myo has been connected.
         @Override
@@ -122,23 +141,23 @@ public class HelloWorldActivity extends MyoActivity {
         // represented as a quaternion.
         @Override
         public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-            getOrientationData().setOrientationData(timestamp, rotation);
-            getOrientationData().calculateOffsetRotation(myo);
+            getOrientationDataList().get(0).setOrientationData(rotation);
+            getOrientationDataList().get(0).calculateOffsetRotation(myo);
 
             // Next, we apply a rotation to the text view using the roll, pitch, and yaw.
-            mTextView.setRotation(getOrientationData().getRoll());
-            mTextView.setRotationX(getOrientationData().getPitch());
-            mTextView.setRotationY(getOrientationData().getYaw());
+            mTextView.setRotation(getOrientationDataList().get(0).getRoll());
+            mTextView.setRotationX(getOrientationDataList().get(0).getPitch());
+            mTextView.setRotationY(getOrientationDataList().get(0).getYaw());
         }
 
         @Override
         public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
-            getAccelerometerData().setAccelerometerData(timestamp, accel);
+            getAccelerometerDataList().get(0).setAccelerometerData(accel, timestamp);
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
-            getGyroData().setGyroData(timestamp, gyro);
+            getGyroDataList().get(0).setGyroData(gyro);
         }
     };
 
@@ -164,5 +183,10 @@ public class HelloWorldActivity extends MyoActivity {
         nodeConfiguration.setMasterUri(getMasterUri());
 
         nodeMainExecutor.execute(node, nodeConfiguration);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

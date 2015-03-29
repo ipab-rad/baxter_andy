@@ -13,11 +13,13 @@ import java.lang.String;
 public class PositionPublisherNode extends AbstractNodeMain implements PublisherNode {
 
     private static final String TAG = PositionPublisherNode.class.getSimpleName();
+    private final AccelerometerData accelerometerData;
     private Publisher<std_msgs.String> publisher;
     private int myoId;
 
-    public PositionPublisherNode(int id){
+    public PositionPublisherNode(int id, AccelerometerData accelerometerData){
         myoId = id;
+        this.accelerometerData = accelerometerData;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class PositionPublisherNode extends AbstractNodeMain implements Publisher
         final CancellableLoop loop = new CancellableLoop() {
             @Override
             protected void loop() throws InterruptedException {
-                sendInstantMessage(AccelerometerData.getInstance().positionDataAsString());
+                sendInstantMessage(accelerometerData.positionDataAsString());
                 Thread.sleep(100);
             }
         };

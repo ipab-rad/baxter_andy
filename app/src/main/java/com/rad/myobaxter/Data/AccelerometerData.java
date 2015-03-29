@@ -15,16 +15,17 @@ import lombok.Data;
 public class AccelerometerData {
     private static final double ZERO_ACCEL_THRESHOLD = 0.1;
     private static final double VELOCITY_DEGRADER = 0.9;
+    private final OrientationData orientationData;
     private Vector3 acceleration = new Vector3();
     private Vector3 velocity = new Vector3();
     private Vector3 position = new Vector3();
     private final double g = 9.80665;
-    private static final AccelerometerData accelerometerData = new AccelerometerData();
-    private final OriginalAccel originalAccel = OriginalAccel.getInstance();
-    private final CalibratedAccel calibratedAccel = CalibratedAccel.getInstance();
+    private Vector3 calibratedAcceleration;
+    private AccelSampleData accelSampleData;
 
-    public static AccelerometerData getInstance(){
-        return accelerometerData;
+    public AccelerometerData(OrientationData orientationData){
+        this.orientationData = orientationData;
+        accelSampleData = new AccelSampleData();
     }
 
     public void setAccelerometerDataToZero(){
@@ -37,23 +38,21 @@ public class AccelerometerData {
         this.position = position;
     }
 
-    public void setAccelerometerData(long timestamp, Vector3 accel){
-        originalAccel.setTimestamp(timestamp);
-        originalAccel.setAccel(accel);
-        Vector3FrameConverter.convertFromBodyToInertiaFrame(accel, OriginalRotation.getInstance().getRotation(), CalibratedRotation.getInstance().getRotation());
-        if(calibratedAccel.getAccel() == null){
-            calibratedAccel.setTimestamp(timestamp);
-            calibratedAccel.setAccel(accel);
+    public void setAccelerometerData(Vector3 accel, long timestamp){
+        Vector3FrameConverter.convertFromBodyToInertiaFrame(accel, orientationData);
+        if(calibratedAcceleration == null){
+            calibratedAcceleration = new Vector3(accel);
         }
+        accelSampleData.addSample(accel, timestamp);
     }
 
-    public void calculateVelocityAndPositionFromAcceleration(AccelSampleData accelSampleData){
+    public void calculateVelocityAndPositionFromAcceleration(){
         List<Vector3Sample> movingAverage = accelSampleData.getMovingAverage();
         if(movingAverage.size() > 2) {
             Vector3Sample latestMovingAverage = movingAverage.get(movingAverage.size() - 1);
             double timePeriod = (double) accelSampleData.milliSecondsBetweenCurrentAndLastSample()/1000.0;
             Vector3 accel = new Vector3(latestMovingAverage.getValue());
-            accel.subtract(calibratedAccel.getAccel());
+            accel.subtract(calibratedAcceleration);
             accel.multiply(g);
             calculatePositionAndVelocity(accel, timePeriod);
         }
@@ -81,5 +80,17 @@ public class AccelerometerData {
 
     public String positionDataAsString(){
         return position.x() + " " + position.y() + " " + position.z();
+    }
+
+    public void calibrate() {
+        List<Vector3Sample> samples = accelSampleData.getSamples();
+        Vector3 calibratedAccel = new Vector3();
+        for (int i = samples.size() - AccelSampleData.CALIBRATED_SAMPLE_SIZE; i < samples.size(); i++) {
+            calibratedAccel.add(samples.get(i).getValue());
+        }
+        calibratedAccel.divide(AccelSampleData.CALIBRATED_SAMPLE_SIZE);
+        calibratedAcceleration.set(calibratedAccel);
+        velocity.set(new Vector3());
+        position.set(new Vector3());
     }
 }

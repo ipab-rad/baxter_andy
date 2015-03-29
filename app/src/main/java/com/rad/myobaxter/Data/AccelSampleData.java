@@ -19,11 +19,6 @@ public class AccelSampleData {
     public static int CALIBRATED_SAMPLE_SIZE = 200;
     private List<Vector3Sample> samples;
     private List<Vector3Sample> movingAverage;
-    private static final AccelSampleData accelSampleData = new AccelSampleData();
-
-    public static AccelSampleData getInstance(){
-        return accelSampleData;
-    }
 
     public AccelSampleData(){
         samples = new ArrayList<Vector3Sample>();

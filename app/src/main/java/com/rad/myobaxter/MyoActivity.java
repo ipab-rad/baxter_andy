@@ -16,9 +16,13 @@ import com.rad.myobaxter.sensor.SensorCalibrator;
 
 import com.thalmic.myo.DeviceListener;
 import com.thalmic.myo.Hub;
+import com.thalmic.myo.Myo;
 import com.thalmic.myo.scanner.ScanActivity;
 
 import org.ros.android.RosActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 
@@ -32,11 +36,11 @@ public abstract class MyoActivity extends RosActivity {
 
     private Toast mToast;
     private DeviceListener mListener;
+    private ArrayList<Myo> mKnownMyos = new ArrayList<Myo>();
 
-    private AccelSampleData accelSampleData = AccelSampleData.getInstance();
-    private AccelerometerData accelerometerData = AccelerometerData.getInstance();
-    private OrientationData orientationData = OrientationData.getInstance();
-    private GyroData gyroData = GyroData.getInstance();
+    private List<GyroData> gyroDataList = new ArrayList<GyroData>();
+    private List<OrientationData> orientationDataList = new ArrayList<OrientationData>();
+    private List<AccelerometerData> accelerometerDataList = new ArrayList<AccelerometerData>();
 
     public MyoActivity(String myoBaxter) {
         super(myoBaxter, myoBaxter);
@@ -71,7 +75,7 @@ public abstract class MyoActivity extends RosActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // We don't want any callbacks when the Activity is gone, so unregister the listener.
+        //We don't want any callbacks when the Activity is gone, so unregister the listener.
         Hub.getInstance().removeListener(mListener);
 
         if (isFinishing()) {
@@ -115,10 +119,17 @@ public abstract class MyoActivity extends RosActivity {
     }
 
     public void calibrateSensors(View view){
-        if(SensorCalibrator.calibrate()){
+        //calibrate all sensors from all myos
+        SensorCalibrator sensorCalibrator = new SensorCalibrator(accelerometerDataList, orientationDataList, gyroDataList);
+        if(accelerometerDataList.get(0).getAccelSampleData().getSamples().size() > AccelSampleData.CALIBRATED_SAMPLE_SIZE){
+            sensorCalibrator.calibrate();
             showToast(getString(R.string.reset));
         } else{
             showToast(getString(R.string.not_enough_samples));
         }
+    }
+
+    protected int identifyMyo(Myo myo) {
+        return getMKnownMyos().indexOf(myo);
     }
 }

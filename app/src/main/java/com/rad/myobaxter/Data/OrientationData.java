@@ -14,31 +14,25 @@ public class OrientationData {
     private float roll = 0;
     private float pitch = 0;
     private float yaw = 0;
-    private OriginalRotation originalRotation = OriginalRotation.getInstance();
-    private CalibratedRotation calibratedRotation = CalibratedRotation.getInstance();
-    private static OrientationData orientationData = new OrientationData();
-    public static OrientationData getInstance(){
-        return orientationData;
-    }
+    private Quaternion rotation = new Quaternion();
+    private Quaternion calibratedRotation;
 
-    public void setOrientationData(long timestamp, Quaternion rotation){
-        originalRotation.setTimestamp(timestamp);
-        getOriginalRotation().setRotation(rotation);
-        if(calibratedRotation.getRotation() == null){
-            calibratedRotation.setTimestamp(timestamp);
-            calibratedRotation.setRotation(rotation);
+    public void setOrientationData(Quaternion rotation){
+        this.rotation.set(rotation);
+        if(calibratedRotation == null){
+            calibratedRotation = new Quaternion(rotation);
         }
     }
 
     public void calculateOffsetRotation(Myo myo){
         // Calculate Euler angles (roll, pitch, and yaw) from the quaternion.
-        float originalRoll = (float) Math.toDegrees(Quaternion.roll(originalRotation.getRotation()));
-        float originalPitch = (float) Math.toDegrees(Quaternion.pitch(originalRotation.getRotation()));
-        float originalYaw = (float) Math.toDegrees(Quaternion.yaw(originalRotation.getRotation()));
+        float originalRoll = (float) Math.toDegrees(Quaternion.roll(rotation));
+        float originalPitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
+        float originalYaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
 
-        float calibratedRoll = (float) Math.toDegrees(Quaternion.roll(calibratedRotation.getRotation()));
-        float calibratedPitch = (float) Math.toDegrees(Quaternion.pitch(calibratedRotation.getRotation()));
-        float calibratedYaw = (float) Math.toDegrees(Quaternion.yaw(calibratedRotation.getRotation()));
+        float calibratedRoll = (float) Math.toDegrees(Quaternion.roll(calibratedRotation));
+        float calibratedPitch = (float) Math.toDegrees(Quaternion.pitch(calibratedRotation));
+        float calibratedYaw = (float) Math.toDegrees(Quaternion.yaw(calibratedRotation));
 
         // Adjust roll and pitch for the orientation of the Myo on the arm.
         if (myo.getXDirection() == XDirection.TOWARD_ELBOW) {
@@ -57,5 +51,9 @@ public class OrientationData {
 
     public String rotationDataAsString(){
         return getRoll() + " " + getPitch() + " " + getYaw();
+    }
+
+    public void calibrate() {
+        calibratedRotation.set(rotation);
     }
 }

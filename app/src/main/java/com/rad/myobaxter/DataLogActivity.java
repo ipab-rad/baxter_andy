@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.rad.myobaxter.data.AccelerometerData;
+import com.rad.myobaxter.data.GyroData;
+import com.rad.myobaxter.data.OrientationData;
 import com.rad.myobaxter.publish.CalibratePublisherNode;
 import com.rad.myobaxter.publish.EnablePublisherNode;
 import com.rad.myobaxter.publish.GesturePublisherNode;
@@ -34,8 +37,6 @@ public class DataLogActivity extends MyoActivity {
 
     // We store each Myo object that we attach to in this list, so that we can keep track of the order we've seen
     // each Myo and give it a unique short identifier (see onAttach() and identifyMyo() below).
-
-    private ArrayList<Myo> mKnownMyos = new ArrayList<Myo>();
 
     private TextView mLockStateView;
     private TextView connectedTextView;
@@ -78,7 +79,11 @@ public class DataLogActivity extends MyoActivity {
             // see if they're referring to the same Myo.
             // Add the Myo object to our list of known Myo devices. This list is used to implement identifyMyo() below so
             // that we can give each Myo a nice short identifier.
-            mKnownMyos.add(myo);
+            getMKnownMyos().add(myo);
+            OrientationData orientationData = new OrientationData();
+            getAccelerometerDataList().add(new AccelerometerData(orientationData));
+            getOrientationDataList().add(orientationData);
+            getGyroDataList().add(new GyroData());
             // Now that we've added it to our list, get our short ID for it and print it out.
             Log.i(TAG, "Attached to " + myo.getMacAddress() + ", now known as Myo " + identifyMyo(myo) + ".");
         }
@@ -184,42 +189,47 @@ public class DataLogActivity extends MyoActivity {
         // represented as a quaternion.
         @Override
         public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-            getOrientationData().setOrientationData(timestamp, rotation);
-            getOrientationData().calculateOffsetRotation(myo);
-            rollTextView.setText(String.format("%.0f", getOrientationData().getRoll()));
-            pitchTextView.setText(String.format("%.0f", getOrientationData().getPitch()));
-            yawTextView.setText(String.format("%.0f", getOrientationData().getYaw()));
+            int myoId = identifyMyo(myo);
+            OrientationData orientationData = getOrientationDataList().get(myoId);
+            orientationData.setOrientationData(rotation);
+            orientationData.calculateOffsetRotation(myo);
+            rollTextView.setText(String.format("%.0f", orientationData.getRoll()));
+            pitchTextView.setText(String.format("%.0f", orientationData.getPitch()));
+            yawTextView.setText(String.format("%.0f", orientationData.getYaw()));
         }
 
         //TODO turn off if not using
         @Override
         public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
 
-            getAccelerometerData().setAccelerometerData(timestamp, accel);
-            getAccelSampleData().addSample(accel, timestamp);
-            getAccelerometerData().calculateVelocityAndPositionFromAcceleration(getAccelSampleData());
-            LogUtils.logAccelerometerData(TAG, timestamp, getAccelerometerData());
+            int myoId = identifyMyo(myo);
+            AccelerometerData accelerometerData = getAccelerometerDataList().get(myoId);
+            accelerometerData.setAccelerometerData(accel, timestamp);
+            accelerometerData.calculateVelocityAndPositionFromAcceleration();
+            LogUtils.logAccelerometerData(TAG, timestamp, accelerometerData);
 
-            accelXTextView.setText(String.format("%.3f", getAccelerometerData().getAcceleration().x()));
-            accelYTextView.setText(String.format("%.3f", getAccelerometerData().getAcceleration().y()));
-            accelZTextView.setText(String.format("%.3f", getAccelerometerData().getAcceleration().z()));
+            accelXTextView.setText(String.format("%.3f", accelerometerData.getAcceleration().x()));
+            accelYTextView.setText(String.format("%.3f", accelerometerData.getAcceleration().y()));
+            accelZTextView.setText(String.format("%.3f", accelerometerData.getAcceleration().z()));
 
-            velocityXTextView.setText(String.format("%.3f", getAccelerometerData().getVelocity().x()));
-            velocityYTextView.setText(String.format("%.3f", getAccelerometerData().getVelocity().y()));
-            velocityZTextView.setText(String.format("%.3f", getAccelerometerData().getVelocity().z()));
+            velocityXTextView.setText(String.format("%.3f", accelerometerData.getVelocity().x()));
+            velocityYTextView.setText(String.format("%.3f", accelerometerData.getVelocity().y()));
+            velocityZTextView.setText(String.format("%.3f", accelerometerData.getVelocity().z()));
 
-            positionXTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().x()));
-            positionYTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().y()));
-            positionZTextView.setText(String.format("%.3f", getAccelerometerData().getPosition().z()));
+            positionXTextView.setText(String.format("%.3f", accelerometerData.getPosition().x()));
+            positionYTextView.setText(String.format("%.3f", accelerometerData.getPosition().y()));
+            positionZTextView.setText(String.format("%.3f", accelerometerData.getPosition().z()));
         }
 
         @Override
         public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
-            getGyroData().setGyroData(timestamp, gyro);
-            getGyroData().offsetGyro();
-            gyroXTextView.setText(String.format("%.0f", getGyroData().getGyro().x()));
-            gyroYTextView.setText(String.format("%.0f", getGyroData().getGyro().y()));
-            gyroZTextView.setText(String.format("%.0f", getGyroData().getGyro().z()));
+            int myoId = identifyMyo(myo);
+            GyroData gyroData = getGyroDataList().get(myoId);
+            gyroData.setGyroData(gyro);
+            gyroData.offsetGyro();
+            gyroXTextView.setText(String.format("%.0f", gyroData.getGyro().x()));
+            gyroYTextView.setText(String.format("%.0f", gyroData.getGyro().y()));
+            gyroZTextView.setText(String.format("%.0f", gyroData.getGyro().z()));
         }
     };
 
@@ -253,34 +263,27 @@ public class DataLogActivity extends MyoActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
-        orientationPublisherNodeList.add(new OrientationPublisherNode(0));
-        orientationPublisherNodeList.add(new OrientationPublisherNode(1));
-        positionPublisherNodeList.add(new PositionPublisherNode(0));
-        positionPublisherNodeList.add(new PositionPublisherNode(1));
-        enablePublisherNodeList.add(new EnablePublisherNode(0));
-        enablePublisherNodeList.add(new EnablePublisherNode(1));
-        calibratePublisherNodeList.add(new CalibratePublisherNode(0));
-        calibratePublisherNodeList.add(new CalibratePublisherNode(1));
-        gesturePublisherNodeList.add(new GesturePublisherNode(0));
-        gesturePublisherNodeList.add(new GesturePublisherNode(1));
-
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
         nodeConfiguration.setMasterUri(getMasterUri());
 
-        nodeMainExecutor.execute(orientationPublisherNodeList.get(0), nodeConfiguration);
-        nodeMainExecutor.execute(orientationPublisherNodeList.get(1), nodeConfiguration);
-        nodeMainExecutor.execute(positionPublisherNodeList.get(0), nodeConfiguration);
-        nodeMainExecutor.execute(positionPublisherNodeList.get(1), nodeConfiguration);
-        nodeMainExecutor.execute(enablePublisherNodeList.get(0), nodeConfiguration);
-        nodeMainExecutor.execute(enablePublisherNodeList.get(1), nodeConfiguration);
-        nodeMainExecutor.execute(calibratePublisherNodeList.get(0), nodeConfiguration);
-        nodeMainExecutor.execute(calibratePublisherNodeList.get(1), nodeConfiguration);
-        nodeMainExecutor.execute(gesturePublisherNodeList.get(0), nodeConfiguration);
-        nodeMainExecutor.execute(gesturePublisherNodeList.get(1), nodeConfiguration);
+        for(int i=0; i < getMKnownMyos().size(); i++) {
+            orientationPublisherNodeList.add(new OrientationPublisherNode(i, getOrientationDataList().get(i)));
+            positionPublisherNodeList.add(new PositionPublisherNode(i, getAccelerometerDataList().get(i)));
+            enablePublisherNodeList.add(new EnablePublisherNode(i));
+            calibratePublisherNodeList.add(new CalibratePublisherNode(i));
+            gesturePublisherNodeList.add(new GesturePublisherNode(i));
+
+            nodeMainExecutor.execute(orientationPublisherNodeList.get(i), nodeConfiguration);
+            nodeMainExecutor.execute(positionPublisherNodeList.get(i), nodeConfiguration);
+            nodeMainExecutor.execute(enablePublisherNodeList.get(i), nodeConfiguration);
+            nodeMainExecutor.execute(calibratePublisherNodeList.get(i), nodeConfiguration);
+            nodeMainExecutor.execute(gesturePublisherNodeList.get(i), nodeConfiguration);
+        }
     }
 
-    private int identifyMyo(Myo myo) {
-        return mKnownMyos.indexOf(myo) + 1;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void toggleEnableOnHeldFingerSpreadPose(Myo myo, long timestamp) {

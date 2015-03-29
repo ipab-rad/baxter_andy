@@ -13,11 +13,13 @@ import java.lang.String;
 public class OrientationPublisherNode extends AbstractNodeMain implements PublisherNode {
 
     private static final String TAG = OrientationPublisherNode.class.getSimpleName();
+    private final OrientationData orientationData;
     private Publisher<std_msgs.String> publisher;
     private int myoId;
 
-    public OrientationPublisherNode(int id){
+    public OrientationPublisherNode(int id, OrientationData orientationData){
         myoId = id;
+        this.orientationData = orientationData;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class OrientationPublisherNode extends AbstractNodeMain implements Publis
         final CancellableLoop loop = new CancellableLoop() {
             @Override
             protected void loop() throws InterruptedException {
-                sendInstantMessage(OrientationData.getInstance().rotationDataAsString());
+                sendInstantMessage(orientationData.rotationDataAsString());
                 Thread.sleep(100);
             }
         };

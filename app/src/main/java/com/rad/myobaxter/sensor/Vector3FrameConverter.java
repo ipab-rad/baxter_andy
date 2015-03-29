@@ -1,5 +1,6 @@
 package com.rad.myobaxter.sensor;
 
+import com.rad.myobaxter.data.OrientationData;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 
@@ -27,5 +28,9 @@ public class Vector3FrameConverter {
         result.multiply(diff);
 
         vector.set(new Vector3(result.x(), result.y(), result.z()));
+    }
+
+    public static void convertFromBodyToInertiaFrame(Vector3 accel, OrientationData orientationData) {
+        convertFromBodyToInertiaFrame(accel, orientationData.getRotation(), orientationData.getCalibratedRotation());
     }
 }
