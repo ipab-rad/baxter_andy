@@ -15,6 +15,7 @@ public class SimplePublisherNode extends AbstractNodeMain implements PublisherNo
     private static final String TAG = SimplePublisherNode.class.getSimpleName();
     private Publisher<std_msgs.String> publisher;
     private int myoId;
+    private String time;
 
     public SimplePublisherNode(int id){
         myoId = id;
@@ -32,8 +33,8 @@ public class SimplePublisherNode extends AbstractNodeMain implements PublisherNo
         final CancellableLoop loop = new CancellableLoop() {
             @Override
             protected void loop() throws InterruptedException {
-                String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
-                sendInstantMessage(time);
+                time = new SimpleDateFormat("HH:mm:ss").format(new Date());
+                sendInstantMessage();
                 Thread.sleep(1000);
             }
         };
@@ -41,8 +42,8 @@ public class SimplePublisherNode extends AbstractNodeMain implements PublisherNo
     }
 
     @Override
-    public void sendInstantMessage(String message){
-        Messenger.sendMessage(TAG, myoId, message, publisher);
+    public void sendInstantMessage(){
+        Messenger.sendMessage(TAG, myoId, time, publisher);
     }
 
 }

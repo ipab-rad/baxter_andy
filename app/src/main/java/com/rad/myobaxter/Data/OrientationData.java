@@ -1,5 +1,6 @@
 package com.rad.myobaxter.data;
 
+import com.rad.myobaxter.utils.MathUtils;
 import com.thalmic.myo.Myo;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.XDirection;
@@ -11,9 +12,9 @@ import lombok.Data;
  */
 @Data
 public class OrientationData {
-    private float roll = 0;
-    private float pitch = 0;
-    private float yaw = 0;
+    private double roll = 0;
+    private double pitch = 0;
+    private double yaw = 0;
     private Quaternion rotation = new Quaternion();
     private Quaternion calibratedRotation;
 

@@ -41,6 +41,9 @@ public abstract class MyoActivity extends RosActivity {
     private List<GyroData> gyroDataList = new ArrayList<GyroData>();
     private List<OrientationData> orientationDataList = new ArrayList<OrientationData>();
     private List<AccelerometerData> accelerometerDataList = new ArrayList<AccelerometerData>();
+    private boolean enabled = false;
+    private boolean calibrated = false;
+    private String gesture = "None";
 
     public MyoActivity(String myoBaxter) {
         super(myoBaxter, myoBaxter);

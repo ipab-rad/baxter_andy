@@ -1,19 +1,16 @@
 package com.rad.myobaxter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.rad.myobaxter.data.AccelerometerData;
 import com.rad.myobaxter.data.GyroData;
 import com.rad.myobaxter.data.OrientationData;
-import com.rad.myobaxter.publish.CalibratePublisherNode;
-import com.rad.myobaxter.publish.EnablePublisherNode;
-import com.rad.myobaxter.publish.GesturePublisherNode;
-import com.rad.myobaxter.publish.OrientationPublisherNode;
-import com.rad.myobaxter.publish.PositionPublisherNode;
-import com.rad.myobaxter.publish.PublisherNode;
+import com.rad.myobaxter.publish.MyoPublisherNode;
 import com.rad.myobaxter.utils.LogUtils;
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
@@ -58,13 +55,11 @@ public class DataLogActivity extends MyoActivity {
     private TextView gyroYTextView;
     private TextView gyroZTextView;
 
-    private boolean enabled = false;
     private long gestureStartTime;
-    private List<PublisherNode> positionPublisherNodeList = new ArrayList<PublisherNode>();
-    private List<PublisherNode> orientationPublisherNodeList = new ArrayList<PublisherNode>();
-    private List<PublisherNode> enablePublisherNodeList = new ArrayList<PublisherNode>();
-    private List<PublisherNode> calibratePublisherNodeList = new ArrayList<PublisherNode>();
-    private List<PublisherNode> gesturePublisherNodeList = new ArrayList<PublisherNode>();
+    private List<MyoPublisherNode> myoPublisherNodeList = new ArrayList<MyoPublisherNode>();
+    private NodeConfiguration nodeConfiguration;
+    private NodeMainExecutor nodeMainExecutor;
+    private boolean execute;
 
     public DataLogActivity() {
         super("MyoBaxterDataLog");
@@ -80,12 +75,7 @@ public class DataLogActivity extends MyoActivity {
             // Add the Myo object to our list of known Myo devices. This list is used to implement identifyMyo() below so
             // that we can give each Myo a nice short identifier.
             getMKnownMyos().add(myo);
-            OrientationData orientationData = new OrientationData();
-            getAccelerometerDataList().add(new AccelerometerData(orientationData));
-            getOrientationDataList().add(orientationData);
-            getGyroDataList().add(new GyroData());
-            // Now that we've added it to our list, get our short ID for it and print it out.
-            Log.i(TAG, "Attached to " + myo.getMacAddress() + ", now known as Myo " + identifyMyo(myo) + ".");
+            initMyo(myo);
         }
 
         // onConnect() is called whenever a Myo has been connected.
@@ -137,6 +127,7 @@ public class DataLogActivity extends MyoActivity {
             toggleEnableOnHeldFingerSpreadPose(myo, timestamp);
             // Handle the cases of the Pose enumeration, and change the text of the text view
             // based on the pose we receive.
+            int myoId = identifyMyo(myo);
             switch (pose) {
                 case UNKNOWN:
                     poseTextView.setText(getString(R.string.unknown));
@@ -155,28 +146,30 @@ public class DataLogActivity extends MyoActivity {
                     poseTextView.setText(getString(restTextId));
                     break;
                 case FIST:
-                    if(enabled) {
-                        gesturePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.pose_fist));
+                    if(isEnabled()){
+                        myoPublisherNodeList.get(myoId).setGesture(getString(R.string.pose_fist));
                     } else {
+                        setCalibrated(true);
                         calibrateSensors(getCurrentFocus());
-                        calibratePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.calibrated));
+                        myoPublisherNodeList.get(myoId).setCalibrated(isCalibrated());
                     }
                     poseTextView.setText(getString(R.string.pose_fist));
                     break;
                 case WAVE_IN:
-                    gesturePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.pose_wavein));
+                    myoPublisherNodeList.get(myoId).setGesture(getString(R.string.pose_wavein));
                     poseTextView.setText(getString(R.string.pose_wavein));
                     break;
                 case WAVE_OUT:
-                    gesturePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.pose_waveout));
+                    myoPublisherNodeList.get(myoId).setGesture(getString(R.string.pose_waveout));
                     poseTextView.setText(getString(R.string.pose_waveout));
                     break;
                 case FINGERS_SPREAD:
+                    myoPublisherNodeList.get(myoId).setGesture(getString(R.string.pose_fingersspread));
                     poseTextView.setText(getString(R.string.pose_fingersspread));
                     gestureStartTime = timestamp;
-                    gesturePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.pose_fingersspread));
                     break;
             }
+//            myoPublisherNodeList.get(myoId).sendInstantMessage();
 
             if (pose != Pose.UNKNOWN && pose != Pose.REST) {
                 // Notify the Myo that the pose has resulted in an action, in this case changing
@@ -233,6 +226,45 @@ public class DataLogActivity extends MyoActivity {
         }
     };
 
+    private void initMyo(Myo myo) {
+        OrientationData orientationData = new OrientationData();
+        getAccelerometerDataList().add(new AccelerometerData(orientationData));
+        getOrientationDataList().add(orientationData);
+        getGyroDataList().add(new GyroData());
+
+        int myoId = identifyMyo(myo);
+        // Now that we've added it to our list, get our short ID for it and print it out.
+        Log.i(TAG, "Attached to " + myo.getMacAddress() + ", now known as Myo " + myoId + ".");
+
+        myoPublisherNodeList.add(new MyoPublisherNode(myoId, getAccelerometerDataList().get(myoId), getOrientationDataList().get(myoId)));
+
+        guardedExecute(myoId);
+
+
+    }
+
+    private void executePublisherNode(int myoId) {
+        if(nodeMainExecutor != null) {
+            nodeMainExecutor.execute(myoPublisherNodeList.get(myoId), nodeConfiguration);
+        }
+    }
+
+    public synchronized void guardedExecute(int myoId) {
+        // This guard only loops once for each special event, which may not
+        // be the event we're waiting for.
+        while(!execute) {
+            try {
+                wait();
+            } catch (InterruptedException e) {}
+        }
+        executePublisherNode(myoId);
+    }
+
+    public synchronized void notifyExecute() {
+        execute = true;
+        notifyAll();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -265,20 +297,9 @@ public class DataLogActivity extends MyoActivity {
     protected void init(NodeMainExecutor nodeMainExecutor) {
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
         nodeConfiguration.setMasterUri(getMasterUri());
-
-        for(int i=0; i < getMKnownMyos().size(); i++) {
-            orientationPublisherNodeList.add(new OrientationPublisherNode(i, getOrientationDataList().get(i)));
-            positionPublisherNodeList.add(new PositionPublisherNode(i, getAccelerometerDataList().get(i)));
-            enablePublisherNodeList.add(new EnablePublisherNode(i));
-            calibratePublisherNodeList.add(new CalibratePublisherNode(i));
-            gesturePublisherNodeList.add(new GesturePublisherNode(i));
-
-            nodeMainExecutor.execute(orientationPublisherNodeList.get(i), nodeConfiguration);
-            nodeMainExecutor.execute(positionPublisherNodeList.get(i), nodeConfiguration);
-            nodeMainExecutor.execute(enablePublisherNodeList.get(i), nodeConfiguration);
-            nodeMainExecutor.execute(calibratePublisherNodeList.get(i), nodeConfiguration);
-            nodeMainExecutor.execute(gesturePublisherNodeList.get(i), nodeConfiguration);
-        }
+        this.nodeConfiguration = nodeConfiguration;
+        this.nodeMainExecutor = nodeMainExecutor;
+        notifyExecute();
     }
 
     @Override
@@ -288,7 +309,7 @@ public class DataLogActivity extends MyoActivity {
 
     private void toggleEnableOnHeldFingerSpreadPose(Myo myo, long timestamp) {
         if(isTimerInProgress()){
-            if(timerLessThanThreshold(timestamp, 3000)) {
+            if(timerLessThanThreshold(timestamp, 1500)) {
                 resetTimer();
             } else {
                 toggleEnable(myo);
@@ -309,13 +330,14 @@ public class DataLogActivity extends MyoActivity {
     }
 
     private void toggleEnable(Myo myo) {
-        enabled = !enabled;
-        if(enabled) {
+        setEnabled(!isEnabled());
+        myoPublisherNodeList.get(identifyMyo(myo)).setEnabled(isEnabled());
+        //TODO send only enable info
+        myoPublisherNodeList.get(identifyMyo(myo)).sendInstantMessage();
+        if(isEnabled()) {
             showToast(getString(R.string.enable));
-            enablePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.enable));
         } else {
             showToast(getString(R.string.disable));
-            enablePublisherNodeList.get(identifyMyo(myo)).sendInstantMessage(getString(R.string.disable));
         }
         resetTimer();
     }
