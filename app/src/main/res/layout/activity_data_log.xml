@@ -9,6 +9,7 @@
     android:horizontalSpacing="10dp"
     android:stretchMode="columnWidth"
     android:gravity="center"
+    android:keepScreenOn="true"
     tools:context="com.rad.myobaxter.DataLogActivity"
     tools:ignore="MergeRootFrame">
 
