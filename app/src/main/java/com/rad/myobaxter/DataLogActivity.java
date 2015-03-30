@@ -302,11 +302,6 @@ public class DataLogActivity extends MyoActivity {
         notifyExecute();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     private void toggleEnableOnHeldFingerSpreadPose(Myo myo, long timestamp) {
         if(isTimerInProgress()){
             if(timerLessThanThreshold(timestamp, 1500)) {
