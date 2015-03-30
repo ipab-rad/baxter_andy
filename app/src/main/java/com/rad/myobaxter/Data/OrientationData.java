@@ -26,28 +26,38 @@ public class OrientationData {
     }
 
     public void calculateOffsetRotation(Myo myo){
-        // Calculate Euler angles (roll, pitch, and yaw) from the quaternion.
-        float originalRoll = (float) Math.toDegrees(Quaternion.roll(rotation));
-        float originalPitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
-        float originalYaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
-
-        float calibratedRoll = (float) Math.toDegrees(Quaternion.roll(calibratedRotation));
-        float calibratedPitch = (float) Math.toDegrees(Quaternion.pitch(calibratedRotation));
-        float calibratedYaw = (float) Math.toDegrees(Quaternion.yaw(calibratedRotation));
-
+        int direction = 1;
         // Adjust roll and pitch for the orientation of the Myo on the arm.
         if (myo.getXDirection() == XDirection.TOWARD_ELBOW) {
-            originalRoll *= -1;
-            originalPitch *= -1;
-            calibratedRoll *= -1;
-            calibratedPitch *= -1;
+            direction = -1;
         }
 
-        // Next, we apply a rotation to the text view using the roll, pitch, and yaw.
-        roll = originalRoll - calibratedRoll;
-        pitch = originalPitch - calibratedPitch;
-        yaw = originalYaw - calibratedYaw;
+        // Calculate Euler angles (roll, pitch, and yaw) from the quaternion.
+        double currentRoll = Quaternion.roll(rotation);
+        double calibratedRoll = Quaternion.roll(calibratedRotation);
+        double currentPitch = Quaternion.pitch(rotation);
+        double calibratedPitch = Quaternion.pitch(calibratedRotation);
+        double currentYaw = Quaternion.yaw(rotation);
+        double calibratedYaw = Quaternion.yaw(calibratedRotation);
 
+        roll = Math.toDegrees(calibrate(currentRoll, calibratedRoll))*direction;
+        pitch = Math.toDegrees(calibrate(currentPitch, calibratedPitch))*direction;
+        yaw = Math.toDegrees(calibrate(currentYaw, calibratedYaw));
+    }
+
+    public double applyOffset(double current, double offset){
+        double difference = current - offset;
+        if(difference > Math.PI){
+            return difference - 2*Math.PI;
+        } else if (difference <= -Math.PI){
+            return 2*Math.PI + difference;
+        }
+        return difference;
+    }
+
+    public double calibrate(double current, double offset){
+        double difference = current + Math.PI - offset;
+        return MathUtils.mod(difference, 2*Math.PI)-Math.PI;
     }
 
     public String rotationDataAsString(){

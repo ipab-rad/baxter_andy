@@ -145,9 +145,9 @@ public class HelloWorldActivity extends MyoActivity {
             getOrientationDataList().get(0).calculateOffsetRotation(myo);
 
             // Next, we apply a rotation to the text view using the roll, pitch, and yaw.
-            mTextView.setRotation(getOrientationDataList().get(0).getRoll());
-            mTextView.setRotationX(getOrientationDataList().get(0).getPitch());
-            mTextView.setRotationY(getOrientationDataList().get(0).getYaw());
+            mTextView.setRotation((float) getOrientationDataList().get(0).getRoll());
+            mTextView.setRotationX((float) getOrientationDataList().get(0).getPitch());
+            mTextView.setRotationY((float) getOrientationDataList().get(0).getYaw());
         }
 
         @Override

@@ -1,17 +1,11 @@
 package com.rad.myobaxter.utils;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 /**
  * Created by andrewrobinson on 28/03/2015.
  */
 public class MathUtils {
-    public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
+    public static double mod(double m, double n){
+        double result = m % n;
+        return result < 0 ? result + n : result;
     }
 }
