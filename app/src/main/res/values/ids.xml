@@ -1,0 +1,5 @@
+<resources>
+    <item name="data_log_button" type="id" />
+    <item name="hello_world_button" type="id" />
+    <item name="vibrate_demo_button" type="id" />
+</resources>
