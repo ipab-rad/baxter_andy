@@ -38,6 +38,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile project(':libraries:rosandroid-core')
+    compile project(':libraries:sensordata')
     compile 'com.thalmic:myosdk:0.10.0@aar'
     compile 'org.projectlombok:lombok:1.14.4'
     compile 'com.android.support:support-v4:22.0.0' // required by Robolectric 2.4
