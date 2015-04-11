@@ -1,6 +1,6 @@
 package com.rad.myobaxter.data;
 
-import com.rad.myobaxter.utils.MathUtils;
+import com.rad.myobaxter.OrientationOffsetApplier;
 import com.thalmic.myo.Myo;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.XDirection;
@@ -37,24 +37,9 @@ public class OrientationData {
         double currentYaw = Quaternion.yaw(rotation);
         double calibratedYaw = Quaternion.yaw(calibratedRotation);
 
-        roll = Math.toDegrees(calibrate(currentRoll, calibratedRoll))*direction;
-        pitch = Math.toDegrees(calibrate(currentPitch, calibratedPitch))*direction;
-        yaw = Math.toDegrees(calibrate(currentYaw, calibratedYaw));
-    }
-
-    public double applyOffset(double current, double offset){
-        double difference = current - offset;
-        if(difference > Math.PI){
-            return difference - 2*Math.PI;
-        } else if (difference <= -Math.PI){
-            return 2*Math.PI + difference;
-        }
-        return difference;
-    }
-
-    public double calibrate(double current, double offset){
-        double difference = current + Math.PI - offset;
-        return MathUtils.mod(difference, 2*Math.PI)-Math.PI;
+        roll = Math.toDegrees(OrientationOffsetApplier.applyOffset(currentRoll, calibratedRoll))*direction;
+        pitch = Math.toDegrees(OrientationOffsetApplier.applyOffset(currentPitch, calibratedPitch))*direction;
+        yaw = Math.toDegrees(OrientationOffsetApplier.applyOffset(currentYaw, calibratedYaw));
     }
 
     public String rotationDataAsString(){
