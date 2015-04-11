@@ -7,15 +7,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.Robolectric.shadowOf;
 
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = "app/src/main/AndroidManifest.xml", emulateSdk = 18)
+@RunWith(RobolectricGradleTestRunner.class)
 public class MenuActivityTest {
 
     private MenuActivity menuActivity;
