@@ -4,9 +4,6 @@ import com.thalmic.myo.Vector3;
 
 import lombok.Data;
 
-/**
- * Created by andrewrobinson on 25/03/2015.
- */
 @Data
 public class Vector3Sample {
     private long timestamp;

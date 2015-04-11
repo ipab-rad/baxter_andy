@@ -4,9 +4,6 @@ import com.thalmic.myo.Vector3;
 
 import lombok.Data;
 
-/**
- * Created by andrewrobinson on 28/03/2015.
- */
 @Data
 public class GyroData {
     private Vector3 gyro = new Vector3();

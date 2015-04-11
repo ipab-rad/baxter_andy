@@ -8,9 +8,6 @@ import java.util.List;
 
 import lombok.Data;
 
-/**
- * Created by andrewrobinson on 25/03/2015.
- */
 @Data
 public class AccelSampleData {
     public static int SAMPLE_SIZE = 10;

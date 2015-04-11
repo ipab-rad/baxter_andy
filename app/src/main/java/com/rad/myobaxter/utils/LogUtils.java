@@ -5,9 +5,6 @@ import android.util.Log;
 import com.rad.myobaxter.data.AccelerometerData;
 import com.rad.myobaxter.data.OrientationData;
 
-/**
- * Created by andrewrobinson on 28/03/2015.
- */
 public class LogUtils {
     public static void logAccelerometerData(String tag, long timestamp, AccelerometerData accelerometerData) {
         Log.d(tag, "logdata timestamp: " + String.valueOf(timestamp));

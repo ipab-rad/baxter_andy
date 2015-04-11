@@ -12,9 +12,6 @@ import java.lang.String;
 
 import std_msgs.Bool;
 
-/**
- * Created by andrewrobinson on 28/03/2015.
- */
 public class Messenger {
     public static void sendMessage(String tag, int myoId, String message, Publisher<std_msgs.String> publisher){
         message = myoId + ":" + message;

@@ -4,9 +4,6 @@ import com.rad.myobaxter.data.OrientationData;
 import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 
-/**
- * Created by andrewrobinson on 28/03/2015.
- */
 public class Vector3FrameConverter {
     public static void convertFromBodyToInertiaFrame(Vector3 vector, Quaternion originalRotation, Quaternion calibratedRotation) {
 

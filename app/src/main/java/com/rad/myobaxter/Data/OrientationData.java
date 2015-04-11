@@ -7,9 +7,6 @@ import com.thalmic.myo.XDirection;
 
 import lombok.Data;
 
-/**
- * Created by andrewrobinson on 28/03/2015.
- */
 @Data
 public class OrientationData {
     private double roll = 0;

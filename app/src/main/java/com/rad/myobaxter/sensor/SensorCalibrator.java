@@ -7,9 +7,6 @@ import com.rad.myobaxter.data.OrientationData;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by andrewrobinson on 28/03/2015.
- */
 public class SensorCalibrator {
     private List<GyroData> gyroDataList = new ArrayList<GyroData>();
     private List<OrientationData> orientationDataList = new ArrayList<OrientationData>();

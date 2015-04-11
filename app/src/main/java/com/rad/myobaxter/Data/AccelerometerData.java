@@ -8,9 +8,6 @@ import java.util.List;
 
 import lombok.Data;
 
-/**
- * Created by andrewrobinson on 28/03/2015.
- */
 @Data
 public class AccelerometerData {
     private static final double ZERO_ACCEL_THRESHOLD = 0.1;

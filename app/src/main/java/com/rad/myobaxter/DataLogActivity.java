@@ -1,9 +1,7 @@
 package com.rad.myobaxter;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.util.Log;
 import android.widget.TextView;
 
