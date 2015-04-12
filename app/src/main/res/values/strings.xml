@@ -3,7 +3,6 @@
 
     <string name="app_name">Myo Baxter</string>
     <string name="hello_world">Hello world!</string>
-    <string name="scan">Scan</string>
     <string name="pose_fist">Fist</string>
     <string name="pose_wavein">Wave In</string>
     <string name="pose_waveout">Wave Out</string>
@@ -37,20 +36,7 @@
     <string name="yaw">Yaw: </string>
     <string name="status">Status: </string>
     <string name="arm_synced">Arm Synced: </string>
-    <string name="short_vibrate">Short Vibrate</string>
-    <string name="medium_vibrate">Medium Vibrate</string>
-    <string name="long_vibrate">Long Vibrate</string>
-    <string name="short_vibrate_five_times">Short Vibrate x5</string>
-    <string name="vibrate_demo">Vibrate Demo</string>
-    <string name="mix_vibrate">Mix</string>
-    <string name="long_vibrate_five_times">Long Vibrate x5</string>
-    <string name="medium_vibrate_five_times">Medium Vibrate x5</string>
-    <string name="short_vibrate_twenty_five_times">Short Vibrate x25</string>
-    <string name="reset">Myo Calibrated</string>
     <string name="reset_sensors">Reset Sensors</string>
-    <string name="expect_one_myo">One Myo</string>
-    <string name="expect_two_myo">Two Myos</string>
-    <string name="not_enough_samples">Not enough samples to calibrate</string>
     <string name="enable">enable</string>
     <string name="disable">disable</string>
     <string name="calibrated">calibrated</string>

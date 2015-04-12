@@ -16,7 +16,6 @@ public class MenuActivity extends Activity implements View.OnClickListener {
 
         setUpButton(R.id.hello_world_button);
         setUpButton(R.id.data_log_button);
-        setUpButton(R.id.vibrate_demo_button);
     }
 
     private void setUpButton(int buttonId) {
@@ -31,8 +30,6 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                 startActivity(new Intent(MenuActivity.this, HelloWorldActivity.class));
             case R.id.data_log_button:
                 startActivity(new Intent(MenuActivity.this, DataLogActivity.class));
-            case R.id.vibrate_demo_button:
-                startActivity(new Intent(MenuActivity.this, VibrateActivity.class));
         }
     }
 

@@ -39,13 +39,4 @@ public class MenuActivityTest {
         Intent expectedIntent = new Intent(menuActivity, HelloWorldActivity.class);
         assertThat(shadowOf(menuActivity).getNextStartedActivity()).isEqualTo(expectedIntent);
     }
-
-    @Test
-    public void vibrateDemoButtonTapDisplaysVibrateDemoActivity(){
-        Button button = (Button) menuActivity.findViewById(R.id.vibrate_demo_button);
-        assertThat(button.getText()).isEqualTo(menuActivity.getString(R.string.vibrate_demo));
-        Robolectric.clickOn(button);
-        Intent expectedIntent = new Intent(menuActivity, VibrateActivity.class);
-        assertThat(shadowOf(menuActivity).getNextStartedActivity()).isEqualTo(expectedIntent);
-    }
 }

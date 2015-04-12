@@ -20,10 +20,4 @@
         android:layout_height="wrap_content"
         android:text="@string/data_log" />
 
-    <Button
-        android:id="@id/vibrate_demo_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/vibrate_demo" />
-
 </LinearLayout>
