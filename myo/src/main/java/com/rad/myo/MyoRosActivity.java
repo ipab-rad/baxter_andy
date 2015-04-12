@@ -9,16 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.rad.myo.data.AccelerometerData;
-import com.rad.myo.data.GyroData;
-import com.rad.myo.data.OrientationData;
-
-import com.rad.myo.data.SensorCalibrator;
+import com.rad.myo.data.MyoData;
 import com.rad.myo.myolistener.DefaultMyoListener;
 import com.rad.myo.publish.MyoPublisherNode;
 import com.thalmic.myo.DeviceListener;
 import com.thalmic.myo.Hub;
-import com.thalmic.myo.Myo;
 import com.thalmic.myo.scanner.ScanActivity;
 
 import org.ros.address.InetAddressFactory;
@@ -26,47 +21,39 @@ import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lombok.Data;
-
-@Data
 public abstract class MyoRosActivity extends RosActivity {
 
     public static final String TAG = "MyoActivity";
-    private final int ATTACHING_COUNT = 2;
+    private final int ATTACHING_COUNT = 1;
 
     private Toast mToast;
-    private DeviceListener mListener = new DefaultMyoListener(this);
-    private ArrayList<Myo> mKnownMyos = new ArrayList<Myo>();
+    private MyoData myoData;
+    private MyoPublisherNode myoPublisherNode;
+    private DeviceListener myoListener;
 
-    private List<GyroData> gyroDataList = new ArrayList<GyroData>();
-    private List<OrientationData> orientationDataList = new ArrayList<OrientationData>();
-    private List<AccelerometerData> accelerometerDataList = new ArrayList<AccelerometerData>();
-    private final SensorCalibrator sensorCalibrator = new SensorCalibrator(accelerometerDataList, orientationDataList, gyroDataList);
+    public MyoRosActivity(String activityIdentifier) {
+        super(activityIdentifier, activityIdentifier);
+        myoData = new MyoData();
+        myoPublisherNode = new MyoPublisherNode(myoData);
+        myoListener = new DefaultMyoListener(this);
+    }
 
-    private boolean enabled = false;
-    private boolean calibrated = false;
-    private String gesture = "None";
+    public void setMyoListener(DeviceListener myoListener){
+        this.myoListener = myoListener;
+    }
 
-    private List<MyoPublisherNode> myoPublisherNodeList = new ArrayList<MyoPublisherNode>();
-    private NodeConfiguration nodeConfiguration;
-    private NodeMainExecutor nodeMainExecutor;
-    private boolean execute;
-
-    public MyoRosActivity(String myoBaxter) {
-        super(myoBaxter, myoBaxter);
+    public MyoData getMyoData(){
+        return myoData;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializeHub(this.mListener);
+        initializeHub(this.myoListener);
     }
 
-    protected void initializeHub(DeviceListener mListener) {
-        this.mListener = mListener;
+    protected void initializeHub(DeviceListener myoListener) {
+        this.myoListener = myoListener;
         // First, we initialize the Hub singleton with an application identifier.
         Hub hub = Hub.getInstance();
         if (!hub.init(this, getPackageName())) {
@@ -90,13 +77,13 @@ public abstract class MyoRosActivity extends RosActivity {
         hub.attachToAdjacentMyos(ATTACHING_COUNT);
 
         // Next, register for DeviceListener callbacks.
-        hub.addListener(mListener);
+        hub.addListener(myoListener);
     }
 
     @Override
     protected void onDestroy() {
         //We don't want any callbacks when the Activity is gone, so unregister the listener.
-        Hub.getInstance().removeListener(mListener);
+        Hub.getInstance().removeListener(myoListener);
 
         if (isFinishing()) {
             // The Activity is finishing, so shutdown the Hub. This will disconnect from the Myo.
@@ -139,51 +126,15 @@ public abstract class MyoRosActivity extends RosActivity {
         mToast.show();
     }
 
-    public void calibrateSensors(){
-        calibrateSensors(this.getCurrentFocus());
-    }
-
     public void calibrateSensors(View view){
-        //calibrate all sensors from all myos
-        if(haveEnoughSampleBeenCollectedToCalibrate()){
-            sensorCalibrator.calibrate();
-            showToast(getString(R.string.reset));
-        } else{
-            showToast(getString(R.string.not_enough_samples));
-        }
-    }
-
-    private boolean haveEnoughSampleBeenCollectedToCalibrate() {
-        return accelerometerDataList.get(0).haveEnoughSamplesBeenCollectedToCalibrate();
-    }
-
-    public int identifyMyo(Myo myo) {
-        return getMKnownMyos().indexOf(myo);
+        //Todo move to MyoData and use event bus to show toasts
+        myoData.calibrateSensors();
     }
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
         nodeConfiguration.setMasterUri(getMasterUri());
-        setNodeConfiguration(nodeConfiguration);
-        setNodeMainExecutor(nodeMainExecutor);
-        notifyExecute();
-    }
-
-    public synchronized void notifyExecute() {
-        setExecute(true);
-        notifyAll();
-    }
-
-    public void toggleEnable(Myo myo) {
-        setEnabled(!isEnabled());
-        getMyoPublisherNodeList().get(identifyMyo(myo)).setEnabled(isEnabled());
-        //TODO send only enable info
-        getMyoPublisherNodeList().get(identifyMyo(myo)).sendInstantMessage();
-        if(isEnabled()) {
-            showToast(getString(R.string.enable));
-        } else {
-            showToast(getString(R.string.disable));
-        }
+        nodeMainExecutor.execute(myoPublisherNode, nodeConfiguration);
     }
 }

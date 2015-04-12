@@ -2,8 +2,8 @@ package com.rad.myobaxter.myolistener;
 
 import android.graphics.Color;
 
-import com.rad.myo.myolistener.DefaultMyoListener;
 import com.rad.myo.MyoRosActivity;
+import com.rad.myo.myolistener.DefaultMyoListener;
 import com.rad.myo.data.AccelerometerData;
 import com.rad.myo.data.GyroData;
 import com.rad.myo.data.OrientationData;
@@ -18,11 +18,11 @@ import com.thalmic.myo.XDirection;
 
 public class MyoDataLogListener extends DefaultMyoListener {
 
-    TextViewEditor textViewEditor;
-    
-    public MyoDataLogListener(MyoRosActivity myoRosActivity){
-        super(myoRosActivity);
-        textViewEditor = new TextViewEditor(myoRosActivity);
+    private TextViewEditor textViewEditor;
+
+    public MyoDataLogListener(MyoRosActivity parentActivity){
+        super(parentActivity);
+        textViewEditor = new TextViewEditor(parentActivity);
     }
 
     @Override
@@ -64,7 +64,6 @@ public class MyoDataLogListener extends DefaultMyoListener {
     @Override
     public void onPose(Myo myo, long timestamp, Pose pose) {
         toggleEnableOnHeldFingerSpreadPose(myo, timestamp);
-        int myoId = getActivity().identifyMyo(myo);
         switch (pose) {
             case UNKNOWN:
                 textViewEditor.setTextView(R.id.poseValue, R.string.unknown);
@@ -83,30 +82,27 @@ public class MyoDataLogListener extends DefaultMyoListener {
                 textViewEditor.setTextView(R.id.poseValue, restTextId);
                 break;
             case FIST:
-                if(getActivity().isEnabled()){
-                    getActivity().getMyoPublisherNodeList().get(myoId).setGesture(getActivity().getString(R.string.pose_fist));
+                if(getMyoData().isEnabled()){
+                    getMyoData().setGesture(getParentActivity().getString(R.string.pose_fist));
                 } else {
-                    getActivity().setCalibrated(true);
-                    getActivity().calibrateSensors();
-                    getActivity().getMyoPublisherNodeList().get(myoId).setCalibrated(getActivity().isCalibrated());
+                    getMyoData().calibrateSensors();
                 }
                 textViewEditor.setTextView(R.id.poseValue, R.string.pose_fist);
                 break;
             case WAVE_IN:
-                getActivity().getMyoPublisherNodeList().get(myoId).setGesture(getActivity().getString(R.string.pose_wavein));
+                getMyoData().setGesture(getParentActivity().getString(R.string.pose_wavein));
                 textViewEditor.setTextView(R.id.poseValue, R.string.pose_wavein);
                 break;
             case WAVE_OUT:
-                getActivity().getMyoPublisherNodeList().get(myoId).setGesture(getActivity().getString(R.string.pose_waveout));
+                getMyoData().setGesture(getParentActivity().getString(R.string.pose_waveout));
                 textViewEditor.setTextView(R.id.poseValue, R.string.pose_fingersspread);
                 break;
             case FINGERS_SPREAD:
-                getActivity().getMyoPublisherNodeList().get(myoId).setGesture(getActivity().getString(R.string.pose_fingersspread));
+                getMyoData().setGesture(getParentActivity().getString(R.string.pose_fingersspread));
                 textViewEditor.setTextView(R.id.poseValue, R.string.pose_fingersspread);
                 setGestureStartTime(timestamp);
                 break;
         }
-//            myoPublisherNodeList.get(myoId).sendInstantMessage();
 
         if (pose != Pose.UNKNOWN && pose != Pose.REST) {
             myo.notifyUserAction();
@@ -116,7 +112,7 @@ public class MyoDataLogListener extends DefaultMyoListener {
     @Override
     public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
         super.onOrientationData(myo, timestamp, rotation);
-        OrientationData orientationData = getMyoOrientationData(myo);
+        OrientationData orientationData = getMyoData().getOrientationData();
         textViewEditor.setTextView(R.id.rollValue, String.format("%.0f", Math.toDegrees(orientationData.getOffsetRoll())));
         textViewEditor.setTextView(R.id.pitchValue, String.format("%.0f", Math.toDegrees(orientationData.getOffsetPitch())));
         textViewEditor.setTextView(R.id.yawValue, String.format("%.0f", Math.toDegrees(orientationData.getOffsetYaw())));
@@ -125,7 +121,7 @@ public class MyoDataLogListener extends DefaultMyoListener {
     @Override
     public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
         super.onAccelerometerData(myo, timestamp, accel);
-        AccelerometerData accelerometerData = getMyoAccelerometerData(myo);
+        AccelerometerData accelerometerData = getMyoData().getAccelerometerData();
         accelerometerData.calculateVelocityAndPositionFromAcceleration();
 
         textViewEditor.setTextView(R.id.accelXValue, String.format("%.3f", accelerometerData.getAcceleration().x()));
@@ -144,7 +140,7 @@ public class MyoDataLogListener extends DefaultMyoListener {
     @Override
     public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
         super.onGyroscopeData(myo, timestamp, gyro);
-        GyroData gyroData = getMyoGyroData(myo);
+        GyroData gyroData = getMyoData().getGyroData();
         textViewEditor.setTextView(R.id.gyroXValue, String.format("%.0f", gyroData.getGyro().x()));
         textViewEditor.setTextView(R.id.gyroYValue, String.format("%.0f", gyroData.getGyro().y()));
         textViewEditor.setTextView(R.id.gyroZValue, String.format("%.0f", gyroData.getGyro().z()));

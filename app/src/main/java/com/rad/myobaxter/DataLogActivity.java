@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.rad.myo.MyoRosActivity;
 import com.rad.myobaxter.myolistener.MyoDataLogListener;
-import com.thalmic.myo.DeviceListener;
 
 public class DataLogActivity extends MyoRosActivity {
 
@@ -12,9 +11,8 @@ public class DataLogActivity extends MyoRosActivity {
 
     public DataLogActivity() {
         super("MyoBaxterDataLog");
+        setMyoListener(new MyoDataLogListener(this));
     }
-
-    private DeviceListener mListener = new MyoDataLogListener(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

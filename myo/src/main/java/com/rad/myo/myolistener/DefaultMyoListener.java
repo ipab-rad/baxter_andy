@@ -1,12 +1,7 @@
 package com.rad.myo.myolistener;
 
-import android.util.Log;
-
 import com.rad.myo.MyoRosActivity;
-import com.rad.myo.data.AccelerometerData;
-import com.rad.myo.data.GyroData;
-import com.rad.myo.data.OrientationData;
-import com.rad.myo.publish.MyoPublisherNode;
+import com.rad.myo.data.MyoData;
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.Arm;
 import com.thalmic.myo.Myo;
@@ -15,68 +10,32 @@ import com.thalmic.myo.Quaternion;
 import com.thalmic.myo.Vector3;
 import com.thalmic.myo.XDirection;
 
-public class DefaultMyoListener extends AbstractDeviceListener implements MyoListener {
+import lombok.Getter;
+import lombok.Setter;
 
-    private final MyoRosActivity myoRosActivity;
+@Getter
+public class DefaultMyoListener extends AbstractDeviceListener {
+
+    private static final int GESTURE_HOLD_THRESHOLD = 1500;
+
+    private final MyoData myoData;
+    private final MyoRosActivity parentActivity;
+    //TODO think about if this is the right place for gestureStartTime
+    @Setter
     private long gestureStartTime;
 
-    public DefaultMyoListener(MyoRosActivity myoRosActivity){
-        this.myoRosActivity = myoRosActivity;
+    public DefaultMyoListener(MyoRosActivity parentActivity){
+        this.parentActivity = parentActivity;
+        this.myoData = parentActivity.getMyoData();
     }
-
-    public MyoRosActivity getActivity(){
-        return myoRosActivity;
-    }
-
-    public long getGestureStartTime(){
-        return gestureStartTime;
-    }
-
-    public void setGestureStartTime(long gestureStartTime){
-        this.gestureStartTime = gestureStartTime;
-    }
-
-    private void initMyo(Myo myo) {
-        OrientationData orientationData = new OrientationData();
-        myoRosActivity.getAccelerometerDataList().add(new AccelerometerData(orientationData));
-        myoRosActivity.getOrientationDataList().add(orientationData);
-        myoRosActivity.getGyroDataList().add(new GyroData());
-
-        int myoId = myoRosActivity.identifyMyo(myo);
-        // Now that we've added it to our list, get our short ID for it and print it out.
-        Log.i(myoRosActivity.TAG, "Attached to " + myo.getMacAddress() + ", now known as Myo " + myoId + ".");
-
-        myoRosActivity.getMyoPublisherNodeList().add(new MyoPublisherNode(myoId, myoRosActivity.getAccelerometerDataList().get(myoId), myoRosActivity.getOrientationDataList().get(myoId)));
-
-        guardedExecute(myoId);
-
-    }
-    public synchronized void guardedExecute(int myoId) {
-        // This guard only loops once for each special event, which may not
-        // be the event we're waiting for.
-        while(!myoRosActivity.isExecute()) {
-            try {
-                wait();
-            } catch (InterruptedException e) {}
-        }
-        executePublisherNode(myoId);
-    }
-
-    private void executePublisherNode(int myoId) {
-        if(myoRosActivity.getNodeMainExecutor() != null) {
-            myoRosActivity.getNodeMainExecutor().execute(myoRosActivity.getMyoPublisherNodeList().get(myoId), myoRosActivity.getNodeConfiguration());
-        }
-    }
-
 
     @Override
     public void onAttach(Myo myo, long timestamp) {
         // The object for a Myo is unique - in other words, it's safe to compare two Myo references to
         // see if they're referring to the same Myo.
-        // Add the Myo object to our list of known Myo devices. This list is used to implement identifyMyo() below so
+        // Add the Myo object to our list of known Myo devices. This list is used to implement identifyMyo() so
         // that we can give each Myo a nice short identifier.
-        myoRosActivity.getMKnownMyos().add(myo);
-        initMyo(myo);
+        GlobalMyoList.add(myo);
     }
 
     // onConnect() is called whenever a Myo has been connected.
@@ -152,43 +111,25 @@ public class DefaultMyoListener extends AbstractDeviceListener implements MyoLis
     // represented as a quaternion.
     @Override
     public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-        OrientationData orientationData = getMyoOrientationData(myo);
-        orientationData.setOrientationData(rotation);
-        orientationData.calculateOffsetRotation(myo);
-    }
-
-    public OrientationData getMyoOrientationData(Myo myo) {
-        int myoId = myoRosActivity.identifyMyo(myo);
-        return myoRosActivity.getOrientationDataList().get(myoId);
+        myoData.getOrientationData().setOrientationData(rotation);
+        myoData.getOrientationData().calculateOffsetRotation(myo);
     }
 
     @Override
     public void onAccelerometerData(Myo myo, long timestamp, Vector3 accel){
-        AccelerometerData accelerometerData = getMyoAccelerometerData(myo);
-        accelerometerData.setAccelerometerData(accel, timestamp);
-    }
-
-    public AccelerometerData getMyoAccelerometerData(Myo myo) {
-        int myoId = myoRosActivity.identifyMyo(myo);
-        return myoRosActivity.getAccelerometerDataList().get(myoId);
+        myoData.getAccelerometerData().setAccelerometerData(accel, timestamp);
     }
 
     @Override
     public void onGyroscopeData(Myo myo, long timestamp, Vector3 gyro){
-        GyroData gyroData = getMyoGyroData(myo);
-        gyroData.setGyroData(gyro);
-        gyroData.offsetGyro();
-    }
-
-    public GyroData getMyoGyroData(Myo myo) {
-        int myoId = myoRosActivity.identifyMyo(myo);
-        return myoRosActivity.getGyroDataList().get(myoId);
+        myoData.getGyroData().setGyroData(gyro);
+        myoData.getGyroData().offsetGyro();
     }
 
     public void toggleEnableOnHeldFingerSpreadPose(Myo myo, long timestamp) {
         if(isTimerInProgress()){
-            if(!timerLessThanThreshold(timestamp, 1500)) {
-                myoRosActivity.toggleEnable(myo);
+            if(!timerLessThanThreshold(timestamp, GESTURE_HOLD_THRESHOLD)) {
+                myoData.toggleEnable();
             }
             resetTimer();
         }
@@ -198,8 +139,8 @@ public class DefaultMyoListener extends AbstractDeviceListener implements MyoLis
         return gestureStartTime != 0;
     }
 
-    private boolean timerLessThanThreshold(long timestamp, int i) {
-        return timestamp - gestureStartTime < 3000;
+    private boolean timerLessThanThreshold(long timestamp, int threshold) {
+        return timestamp - gestureStartTime < threshold;
     }
 
     public void resetTimer() {

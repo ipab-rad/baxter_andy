@@ -5,7 +5,6 @@ import android.os.Bundle;
 import com.rad.myo.MyoRosActivity;
 import com.rad.myo.publish.SimplePublisherNode;
 import com.rad.myobaxter.myolistener.MyoHelloWorldListener;
-import com.thalmic.myo.DeviceListener;
 
 import org.ros.address.InetAddressFactory;
 import org.ros.node.NodeConfiguration;
@@ -15,10 +14,9 @@ import org.ros.node.NodeMainExecutor;
 public class HelloWorldActivity extends MyoRosActivity {
     public static final String TAG = "HelloWorldActivity";
 
-    private DeviceListener mListener = new MyoHelloWorldListener(this);
-
     public HelloWorldActivity() {
         super("MyoBaxterHellowWorld");
+        setMyoListener(new MyoHelloWorldListener(this));
     }
 
     @Override

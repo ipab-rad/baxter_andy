@@ -1,7 +1,6 @@
 package com.rad.myo.publish;
 
-import com.rad.myo.data.AccelerometerData;
-import com.rad.myo.data.OrientationData;
+import com.rad.myo.data.MyoData;
 
 import org.ros.concurrent.CancellableLoop;
 import org.ros.namespace.GraphName;
@@ -10,36 +9,21 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 
 import geometry_msgs.Vector3;
-import lombok.Setter;
 import std_msgs.Bool;
 
 public class MyoPublisherNode extends AbstractNodeMain implements PublisherNode {
 
     private static final String TAG = MyoPublisherNode.class.getSimpleName();
-    private final AccelerometerData accelerometerData;
-    private final OrientationData orientationData;
-
-    @Setter
-    private boolean enabled;
-    @Setter
-    private boolean calibrated;
-    @Setter
-    private String gesture;
+    private final MyoData myoData;
 
     private Publisher<Vector3> orientationPublisher;
     private Publisher<Vector3> positionPublisher;
     private Publisher<Bool> enablePublisher;
     private Publisher<Bool> calibratePublisher;
     private Publisher<std_msgs.String> gesturePublisher;
-    private int myoId;
 
-    public MyoPublisherNode(int id, AccelerometerData accelerometerData, OrientationData orientationData){
-        myoId = id;
-        this.accelerometerData = accelerometerData;
-        this.orientationData = orientationData;
-        this.enabled = false;
-        this.calibrated = false;
-        this.gesture = "None";
+    public MyoPublisherNode(MyoData myoData) {
+        this.myoData = myoData;
     }
 
     @Override
@@ -49,11 +33,11 @@ public class MyoPublisherNode extends AbstractNodeMain implements PublisherNode 
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        orientationPublisher = connectedNode.newPublisher(GraphName.of("orientation_myo_"+myoId), Vector3._TYPE);
-        positionPublisher = connectedNode.newPublisher(GraphName.of("position_myo_"+myoId), Vector3._TYPE);
-        enablePublisher = connectedNode.newPublisher(GraphName.of("enabled_myo_"+myoId), Bool._TYPE);
-        calibratePublisher = connectedNode.newPublisher(GraphName.of("calibrated_myo_"+myoId), Bool._TYPE);
-        gesturePublisher = connectedNode.newPublisher(GraphName.of("calibrated_myo_"+myoId), std_msgs.String._TYPE);
+        orientationPublisher = connectedNode.newPublisher(GraphName.of("orientation_myo_"+myoData.getMyoId()), Vector3._TYPE);
+        positionPublisher = connectedNode.newPublisher(GraphName.of("position_myo_"+myoData.getMyoId()), Vector3._TYPE);
+        enablePublisher = connectedNode.newPublisher(GraphName.of("enabled_myo_"+myoData.getMyoId()), Bool._TYPE);
+        calibratePublisher = connectedNode.newPublisher(GraphName.of("calibrated_myo_"+myoData.getMyoId()), Bool._TYPE);
+        gesturePublisher = connectedNode.newPublisher(GraphName.of("calibrated_myo_"+myoData.getMyoId()), std_msgs.String._TYPE);
 
         final CancellableLoop loop = new CancellableLoop() {
             @Override
@@ -67,11 +51,11 @@ public class MyoPublisherNode extends AbstractNodeMain implements PublisherNode 
 
     @Override
     public void sendInstantMessage(){
-        Messenger.sendPositionMessage(TAG, myoId, accelerometerData, positionPublisher);
-        Messenger.sendOrientationMessage(TAG, myoId, orientationData, orientationPublisher);
-        Messenger.sendBooleanMessage(TAG, myoId, enabled, enablePublisher);
-        Messenger.sendBooleanMessage(TAG, myoId, calibrated, calibratePublisher);
-        Messenger.sendMessage(TAG, myoId, gesture, gesturePublisher);
+        Messenger.sendPositionMessage(TAG, myoData.getMyoId(), myoData.getAccelerometerData(), positionPublisher);
+        Messenger.sendOrientationMessage(TAG, myoData.getMyoId(), myoData.getOrientationData(), orientationPublisher);
+        Messenger.sendBooleanMessage(TAG, myoData.getMyoId(), myoData.isEnabled(), enablePublisher);
+        Messenger.sendBooleanMessage(TAG, myoData.getMyoId(), myoData.isCalibrated(), calibratePublisher);
+        Messenger.sendMessage(TAG, myoData.getMyoId(), myoData.getGesture(), gesturePublisher);
     }
 
 }

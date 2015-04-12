@@ -28,8 +28,10 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         switch(v.getId()){
             case R.id.hello_world_button:
                 startActivity(new Intent(MenuActivity.this, HelloWorldActivity.class));
+                break;
             case R.id.data_log_button:
                 startActivity(new Intent(MenuActivity.this, DataLogActivity.class));
+                break;
         }
     }
 

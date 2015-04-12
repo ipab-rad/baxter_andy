@@ -2,8 +2,8 @@ package com.rad.myobaxter.myolistener;
 
 import android.graphics.Color;
 
-import com.rad.myo.myolistener.DefaultMyoListener;
 import com.rad.myo.MyoRosActivity;
+import com.rad.myo.myolistener.DefaultMyoListener;
 import com.rad.myo.data.OrientationData;
 import com.rad.myobaxter.R;
 import com.rad.myobaxter.utils.TextViewEditor;
@@ -15,11 +15,11 @@ import com.thalmic.myo.XDirection;
 
 public class MyoHelloWorldListener extends DefaultMyoListener {
 
-    TextViewEditor textViewEditor;
+    private TextViewEditor textViewEditor;
 
-    public MyoHelloWorldListener(MyoRosActivity myoRosActivity){
-        super(myoRosActivity);
-        textViewEditor = new TextViewEditor(myoRosActivity);
+    public MyoHelloWorldListener(MyoRosActivity parentActivity){
+        super(parentActivity);
+        textViewEditor = new TextViewEditor(parentActivity);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class MyoHelloWorldListener extends DefaultMyoListener {
                 textViewEditor.setTextView(R.id.text, restTextId);
                 break;
             case FIST:
-                getActivity().calibrateSensors();
+                getMyoData().calibrateSensors();
                 textViewEditor.setTextView(R.id.text, R.string.pose_fist);
                 break;
             case WAVE_IN:
@@ -108,7 +108,7 @@ public class MyoHelloWorldListener extends DefaultMyoListener {
         super.onOrientationData(myo, timestamp, rotation);
 
         // Next, we apply a rotation to the text view using the offsetRoll, offsetPitch, and offsetYaw.
-        OrientationData orientationData = getMyoOrientationData(myo);
+        OrientationData orientationData = getMyoData().getOrientationData();
         float offsetRoll = (float) Math.toDegrees(orientationData.getOffsetRoll());
         float offsetPitch = (float) Math.toDegrees(orientationData.getOffsetPitch());
         float offsetYaw = (float) Math.toDegrees(orientationData.getOffsetYaw());
