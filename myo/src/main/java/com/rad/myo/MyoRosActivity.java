@@ -26,7 +26,6 @@ public abstract class MyoRosActivity extends RosActivity {
     public static final String TAG = "MyoActivity";
     private final int ATTACHING_COUNT = 1;
 
-    private Toast mToast;
     private MyoData myoData;
     private MyoPublisherNode myoPublisherNode;
     private DeviceListener myoListener;
@@ -114,16 +113,6 @@ public abstract class MyoRosActivity extends RosActivity {
         // Launch the ScanActivity to scan for Myos to connect to.
         Intent intent = new Intent(this, ScanActivity.class);
         startActivity(intent);
-    }
-
-    protected void showToast(String text) {
-        Log.w(TAG, text);
-        if (mToast == null) {
-            mToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-        } else {
-            mToast.setText(text);
-        }
-        mToast.show();
     }
 
     public void calibrateSensors(View view){
