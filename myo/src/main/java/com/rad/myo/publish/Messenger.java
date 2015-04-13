@@ -18,9 +18,7 @@ public class Messenger {
         Log.i(tag, message);
 
         try {
-            std_msgs.String str = publisher.newMessage();
-            str.setData(message);
-            publisher.publish(str);
+            MessagePublisher.publishString(publisher, message);
         } catch (ClassCastException e) {
             Log.d(tag, "Could not publish message.");
         }
@@ -33,28 +31,18 @@ public class Messenger {
         double offsetYaw = Math.toDegrees(orientationData.getOffsetYaw());
         Log.i(tag, myoId + ":" + offsetRoll + " " + offsetPitch + " " + offsetYaw);
 
-        geometry_msgs.Vector3 vector = publisher.newMessage();
-        vector.setX(offsetRoll);
-        vector.setY(offsetPitch);
-        vector.setZ(offsetYaw);
-        publisher.publish(vector);
+        MessagePublisher.publishVector3(publisher, offsetRoll, offsetPitch, offsetYaw);
     }
 
     public static void sendPositionMessage(String tag, int myoId, AccelerometerData accelerometerData, Publisher<geometry_msgs.Vector3> publisher){
         Vector3 position = accelerometerData.getPosition();
         Log.i(tag, myoId + ":" + position.x()+ " " + position.y() + " " + position.z());
 
-        geometry_msgs.Vector3 vector = publisher.newMessage();
-        vector.setX(position.x()    );
-        vector.setY(position.y());
-        vector.setZ(position.z());
-        publisher.publish(vector);
+        MessagePublisher.publishVector3(publisher, position.x(), position.y(), position.z());
     }
 
     public static void sendBooleanMessage(String tag, int myoId, boolean message, Publisher<Bool> publisher) {
         Log.i(tag, myoId + ":" + message);
-        Bool bool = publisher.newMessage();
-        bool.setData(message);
-        publisher.publish(bool);
+        MessagePublisher.publishBool(publisher, message);
     }
 }
