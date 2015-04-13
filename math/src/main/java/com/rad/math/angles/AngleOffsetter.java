@@ -1,11 +1,8 @@
 package com.rad.math.angles;
 
-import lombok.Data;
-
 import static com.rad.math.Math.mod;
 import static java.lang.Math.PI;
 
-@Data
 public class AngleOffsetter {
     public static double applyOffset(double current, double offset){
         double difference = current + PI - offset;
