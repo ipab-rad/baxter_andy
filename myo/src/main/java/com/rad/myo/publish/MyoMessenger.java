@@ -18,7 +18,11 @@ public class MyoMessenger {
         message = myoId + ":" + message;
         Log.i(tag, message);
 
-        MessagePublisher.publishString(publisher, message);
+        try {
+            MessagePublisher.publishString(publisher, message);
+        } catch (ClassCastException e) {
+            Log.d(tag, "Could not publish message.");
+        }
     }
 
     public static void sendOrientationMessage(String tag, int myoId, OrientationData orientationData, Publisher<geometry_msgs.Vector3> publisher){
