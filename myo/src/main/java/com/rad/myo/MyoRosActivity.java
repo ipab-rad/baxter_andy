@@ -117,7 +117,6 @@ public abstract class MyoRosActivity extends RosActivity {
     }
 
     public void calibrateSensors(View view){
-        //Todo move to MyoData and use event bus to show toasts
         myoData.calibrateSensors();
     }
 
