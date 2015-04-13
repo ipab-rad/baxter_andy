@@ -1,4 +1,4 @@
-package com.rad.myo.publish;
+package com.rad.rosjava.publish;
 
 import org.ros.concurrent.CancellableLoop;
 import org.ros.namespace.GraphName;
@@ -12,18 +12,15 @@ import java.util.Date;
 
 public class SimplePublisherNode extends AbstractNodeMain implements PublisherNode {
 
-    private static final String TAG = SimplePublisherNode.class.getSimpleName();
     private Publisher<std_msgs.String> publisher;
-    private int myoId;
     private String time;
 
-    public SimplePublisherNode(int id){
-        myoId = id;
+    public SimplePublisherNode(){
     }
 
     @Override
     public GraphName getDefaultNodeName() {
-        return GraphName.of("SimplePublisher/TimeLoopNode");
+        return GraphName.of("SimplePublisherNode");
     }
 
     @Override
@@ -34,7 +31,7 @@ public class SimplePublisherNode extends AbstractNodeMain implements PublisherNo
             @Override
             protected void loop() throws InterruptedException {
                 time = new SimpleDateFormat("HH:mm:ss").format(new Date());
-                sendInstantMessage();
+                publishMessage();
                 Thread.sleep(1000);
             }
         };
@@ -42,8 +39,8 @@ public class SimplePublisherNode extends AbstractNodeMain implements PublisherNo
     }
 
     @Override
-    public void sendInstantMessage(){
-        Messenger.sendMessage(TAG, myoId, time, publisher);
+    public void publishMessage(){
+        MessagePublisher.publishString(publisher, time);
     }
 
 }

@@ -29,6 +29,7 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile (project(':math'))
+    compile (project(':rosjava'))
 
     compile ('org.ros.android_core:android_15:0.2.0') {
         exclude group: 'xml-apis'

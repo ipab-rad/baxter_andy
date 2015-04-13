@@ -1,1 +1,1 @@
-include ':app', ':math', ':myo'
+include ':app', ':math', ':myo', ':rosjava'

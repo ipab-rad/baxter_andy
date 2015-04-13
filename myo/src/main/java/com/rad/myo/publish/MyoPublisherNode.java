@@ -1,6 +1,7 @@
 package com.rad.myo.publish;
 
 import com.rad.myo.data.MyoData;
+import com.rad.rosjava.publish.PublisherNode;
 
 import org.ros.concurrent.CancellableLoop;
 import org.ros.namespace.GraphName;
@@ -42,7 +43,7 @@ public class MyoPublisherNode extends AbstractNodeMain implements PublisherNode 
         final CancellableLoop loop = new CancellableLoop() {
             @Override
             protected void loop() throws InterruptedException {
-                sendInstantMessage();
+                publishMessage();
                 Thread.sleep(100);
             }
         };
@@ -50,12 +51,12 @@ public class MyoPublisherNode extends AbstractNodeMain implements PublisherNode 
     }
 
     @Override
-    public void sendInstantMessage(){
-        Messenger.sendPositionMessage(TAG, myoData.getMyoId(), myoData.getAccelerometerData(), positionPublisher);
-        Messenger.sendOrientationMessage(TAG, myoData.getMyoId(), myoData.getOrientationData(), orientationPublisher);
-        Messenger.sendBooleanMessage(TAG, myoData.getMyoId(), myoData.isEnabled(), enablePublisher);
-        Messenger.sendBooleanMessage(TAG, myoData.getMyoId(), myoData.isCalibrated(), calibratePublisher);
-        Messenger.sendMessage(TAG, myoData.getMyoId(), myoData.getGesture(), gesturePublisher);
+    public void publishMessage(){
+        MyoMessenger.sendPositionMessage(TAG, myoData.getMyoId(), myoData.getAccelerometerData(), positionPublisher);
+        MyoMessenger.sendOrientationMessage(TAG, myoData.getMyoId(), myoData.getOrientationData(), orientationPublisher);
+        MyoMessenger.sendBooleanMessage(TAG, myoData.getMyoId(), myoData.isEnabled(), enablePublisher);
+        MyoMessenger.sendBooleanMessage(TAG, myoData.getMyoId(), myoData.isCalibrated(), calibratePublisher);
+        MyoMessenger.sendMessage(TAG, myoData.getMyoId(), myoData.getGesture(), gesturePublisher);
     }
 
 }

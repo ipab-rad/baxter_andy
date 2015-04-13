@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.rad.myo.data.AccelerometerData;
 import com.rad.myo.data.OrientationData;
+import com.rad.rosjava.publish.MessagePublisher;
 import com.thalmic.myo.Vector3;
 
 import org.ros.node.topic.Publisher;
@@ -12,7 +13,7 @@ import java.lang.String;
 
 import std_msgs.Bool;
 
-public class Messenger {
+public class MyoMessenger {
     public static void sendMessage(String tag, int myoId, String message, Publisher<std_msgs.String> publisher){
         message = myoId + ":" + message;
         Log.i(tag, message);

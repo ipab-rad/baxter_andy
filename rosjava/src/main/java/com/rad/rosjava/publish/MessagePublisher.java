@@ -1,4 +1,4 @@
-package com.rad.myo.publish;
+package com.rad.rosjava.publish;
 
 import org.ros.node.topic.Publisher;
 
