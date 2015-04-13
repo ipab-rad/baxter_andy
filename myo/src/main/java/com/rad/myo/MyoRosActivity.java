@@ -19,6 +19,7 @@ import com.thalmic.myo.scanner.ScanActivity;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
 public abstract class MyoRosActivity extends RosActivity {
@@ -122,8 +123,12 @@ public abstract class MyoRosActivity extends RosActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
+        initNode(nodeMainExecutor, myoPublisherNode);
+    }
+
+    public void initNode(NodeMainExecutor nodeMainExecutor, NodeMain node) {
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
         nodeConfiguration.setMasterUri(getMasterUri());
-        nodeMainExecutor.execute(myoPublisherNode, nodeConfiguration);
+        nodeMainExecutor.execute(node, nodeConfiguration);
     }
 }

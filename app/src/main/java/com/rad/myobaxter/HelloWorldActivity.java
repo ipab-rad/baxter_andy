@@ -3,12 +3,9 @@ package com.rad.myobaxter;
 import android.os.Bundle;
 
 import com.rad.myo.MyoRosActivity;
-import com.rad.myo.publish.SimplePublisherNode;
 import com.rad.myobaxter.myolistener.MyoHelloWorldListener;
+import com.rad.rosjava.publish.SimplePublisherNode;
 
-import org.ros.address.InetAddressFactory;
-import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
 public class HelloWorldActivity extends MyoRosActivity {
@@ -27,11 +24,6 @@ public class HelloWorldActivity extends MyoRosActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
-        NodeMain node = new SimplePublisherNode(0);
-
-        NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
-        nodeConfiguration.setMasterUri(getMasterUri());
-
-        nodeMainExecutor.execute(node, nodeConfiguration);
+        initNode(nodeMainExecutor, new SimplePublisherNode());
     }
 }
