@@ -5,19 +5,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context="com.rad.myobaxter.MenuActivity"
+    tools:context="com.rad.myobaxter.activities.MenuActivity"
     tools:ignore="MergeRootFrame">
 
     <Button
         android:id="@id/hello_world_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:text="@string/title.hello_world" />
 
     <Button
         android:id="@id/data_log_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/data_log" />
+        android:text="@string/title.data_log" />
 
 </LinearLayout>

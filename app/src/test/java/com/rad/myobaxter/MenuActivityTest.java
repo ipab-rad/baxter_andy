@@ -3,6 +3,10 @@ package com.rad.myobaxter;
 import android.content.Intent;
 import android.widget.Button;
 
+import com.rad.myobaxter.activities.DataLogActivity;
+import com.rad.myobaxter.activities.HelloWorldActivity;
+import com.rad.myobaxter.activities.MenuActivity;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +33,7 @@ public class MenuActivityTest {
     @Test
     public void dataLogButtonTapDisplaysDataLogActivity(){
         Button button = (Button) menuActivity.findViewById(R.id.data_log_button);
-        assertThat(button.getText()).isEqualTo(menuActivity.getString(R.string.data_log));
+        assertThat(button.getText()).isEqualTo(menuActivity.getString(R.string.title_data_log));
         clickOn(button);
         Intent expectedIntent = new Intent(menuActivity, DataLogActivity.class);
         assertThat(shadowOf(menuActivity).getNextStartedActivity()).isEqualTo(expectedIntent);
@@ -38,7 +42,7 @@ public class MenuActivityTest {
     @Test
     public void helloWorldButtonTapDisplaysHelloWorldActivity(){
         Button button = (Button) menuActivity.findViewById(R.id.hello_world_button);
-        assertThat(button.getText()).isEqualTo(menuActivity.getString(R.string.hello_world));
+        assertThat(button.getText()).isEqualTo(menuActivity.getString(R.string.title_hello_world));
         clickOn(button);
         Intent expectedIntent = new Intent(menuActivity, HelloWorldActivity.class);
         assertThat(shadowOf(menuActivity).getNextStartedActivity()).isEqualTo(expectedIntent);

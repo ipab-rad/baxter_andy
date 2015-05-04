@@ -33,6 +33,8 @@ public abstract class MyoRosActivity extends RosActivity {
 
     public MyoRosActivity(String activityIdentifier) {
         super(activityIdentifier, activityIdentifier);
+        //Use below if we want to by pass MasterURIChooser and hardcode
+        //super(activityIdentifier, activityIdentifier, URI.create("http://localhost:11311"));
         myoData = new MyoData();
         myoPublisherNode = new MyoPublisherNode(myoData);
         myoListener = new DefaultMyoListener(this);

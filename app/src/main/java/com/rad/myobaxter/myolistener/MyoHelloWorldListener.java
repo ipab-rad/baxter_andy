@@ -37,25 +37,25 @@ public class MyoHelloWorldListener extends DefaultMyoListener {
     @Override
     public void onArmSync(Myo myo, long timestamp, Arm arm, XDirection xDirection) {
         if(myo.getArm() == Arm.LEFT) {
-            textViewEditor.setTextView(R.id.text, R.string.arm_left);
+            textViewEditor.setTextView(R.id.text, R.string.myo_data_arm_left);
         } else {
-            textViewEditor.setTextView(R.id.text, R.string.arm_right);
+            textViewEditor.setTextView(R.id.text, R.string.myo_data_arm_right);
         }
     }
 
     @Override
     public void onArmUnsync(Myo myo, long timestamp) {
-        textViewEditor.setTextView(R.id.text, R.string.hello_world);
+        textViewEditor.setTextView(R.id.text, R.string.title_hello_world);
     }
 
     @Override
     public void onUnlock(Myo myo, long timestamp) {
-        textViewEditor.setTextView(R.id.lock_state, R.string.unlocked);
+        textViewEditor.setTextView(R.id.lock_state, R.string.myo_data_unlocked);
     }
 
     @Override
     public void onLock(Myo myo, long timestamp) {
-        textViewEditor.setTextView(R.id.lock_state, R.string.locked);
+        textViewEditor.setTextView(R.id.lock_state, R.string.myo_data_locked);
     }
 
     @Override
@@ -64,33 +64,33 @@ public class MyoHelloWorldListener extends DefaultMyoListener {
         // based on the pose we receive.
         switch (pose) {
             case UNKNOWN:
-                textViewEditor.setTextView(R.id.text, R.string.hello_world);
+                textViewEditor.setTextView(R.id.text, R.string.title_hello_world);
                 break;
             case REST:
             case DOUBLE_TAP:
-                int restTextId = R.string.hello_world;
+                int restTextId = R.string.title_hello_world;
                 switch (myo.getArm()) {
                     case LEFT:
-                        restTextId = R.string.arm_left;
+                        restTextId = R.string.myo_data_arm_left;
                         break;
                     case RIGHT:
-                        restTextId = R.string.arm_right;
+                        restTextId = R.string.myo_data_arm_right;
                         break;
                 }
                 textViewEditor.setTextView(R.id.text, restTextId);
                 break;
             case FIST:
                 getMyoData().calibrateSensors();
-                textViewEditor.setTextView(R.id.text, R.string.pose_fist);
+                textViewEditor.setTextView(R.id.text, R.string.myo_data_pose_fist);
                 break;
             case WAVE_IN:
-                textViewEditor.setTextView(R.id.text, R.string.pose_wavein);
+                textViewEditor.setTextView(R.id.text, R.string.myo_data_pose_wavein);
                 break;
             case WAVE_OUT:
-                textViewEditor.setTextView(R.id.text, R.string.pose_waveout);
+                textViewEditor.setTextView(R.id.text, R.string.myo_data_pose_waveout);
                 break;
             case FINGERS_SPREAD:
-                textViewEditor.setTextView(R.id.text, R.string.pose_fingersspread);
+                textViewEditor.setTextView(R.id.text, R.string.myo_data_pose_fingersspread);
                 break;
         }
 

@@ -1,8 +1,9 @@
-package com.rad.myobaxter;
+package com.rad.myobaxter.activities;
 
 import android.os.Bundle;
 
 import com.rad.myo.MyoRosActivity;
+import com.rad.myobaxter.R;
 import com.rad.myobaxter.myolistener.MyoHelloWorldListener;
 import com.rad.rosjava.publish.SimplePublisherNode;
 

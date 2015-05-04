@@ -1,10 +1,12 @@
-package com.rad.myobaxter;
+package com.rad.myobaxter.activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.rad.myobaxter.R;
 
 
 public class MenuActivity extends Activity implements View.OnClickListener {

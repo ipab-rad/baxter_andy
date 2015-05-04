@@ -27,38 +27,38 @@ public class MyoDataLogListener extends DefaultMyoListener {
 
     @Override
     public void onConnect(Myo myo, long timestamp) {
-        textViewEditor.setTextView(R.id.connection_status, R.string.connected);
+        textViewEditor.setTextView(R.id.connection_status, R.string.myo_data_connected);
         textViewEditor.setTextColor(R.id.connection_status, Color.GREEN);
     }
 
     @Override
     public void onDisconnect(Myo myo, long timestamp) {
-        textViewEditor.setTextView(R.id.connection_status, R.string.disconnected);
+        textViewEditor.setTextView(R.id.connection_status, R.string.myo_data_disconnected);
         textViewEditor.setTextColor(R.id.connection_status, Color.RED);
     }
 
     @Override
     public void onArmSync(Myo myo, long timestamp, Arm arm, XDirection xDirection) {
         if(myo.getArm() == Arm.LEFT) {
-            textViewEditor.setTextView(R.id.sync_status, R.string.arm_left);
+            textViewEditor.setTextView(R.id.sync_status, R.string.myo_data_arm_left);
         } else {
-            textViewEditor.setTextView(R.id.sync_status, R.string.arm_right);
+            textViewEditor.setTextView(R.id.sync_status, R.string.myo_data_arm_right);
         }
     }
 
     @Override
     public void onArmUnsync(Myo myo, long timestamp) {
-        textViewEditor.setTextView(R.id.sync_status, R.string.unsynced);
+        textViewEditor.setTextView(R.id.sync_status, R.string.myo_data_unsynced);
     }
 
     @Override
     public void onUnlock(Myo myo, long timestamp) {
-        textViewEditor.setTextView(R.id.locked, R.string.unlocked);
+        textViewEditor.setTextView(R.id.locked, R.string.myo_data_unlocked);
     }
 
     @Override
     public void onLock(Myo myo, long timestamp) {
-        textViewEditor.setTextView(R.id.locked, R.string.locked);
+        textViewEditor.setTextView(R.id.locked, R.string.myo_data_locked);
     }
 
     @Override
@@ -66,40 +66,40 @@ public class MyoDataLogListener extends DefaultMyoListener {
         toggleEnableOnHeldFingerSpreadPose(myo, timestamp);
         switch (pose) {
             case UNKNOWN:
-                textViewEditor.setTextView(R.id.poseValue, R.string.unknown);
+                textViewEditor.setTextView(R.id.poseValue, R.string.myo_data_unknown);
                 break;
             case REST:
             case DOUBLE_TAP:
-                int restTextId = R.string.unsynced;
+                int restTextId = R.string.myo_data_unsynced;
                 switch (myo.getArm()) {
                     case LEFT:
-                        restTextId = R.string.arm_left;
+                        restTextId = R.string.myo_data_arm_left;
                         break;
                     case RIGHT:
-                        restTextId = R.string.arm_right;
+                        restTextId = R.string.myo_data_arm_right;
                         break;
                 }
                 textViewEditor.setTextView(R.id.poseValue, restTextId);
                 break;
             case FIST:
                 if(getMyoData().isEnabled()){
-                    getMyoData().setGesture(getParentActivity().getString(R.string.pose_fist));
+                    getMyoData().setGesture(getParentActivity().getString(R.string.myo_data_pose_fist));
                 } else {
                     getMyoData().calibrateSensors();
                 }
-                textViewEditor.setTextView(R.id.poseValue, R.string.pose_fist);
+                textViewEditor.setTextView(R.id.poseValue, R.string.myo_data_pose_fist);
                 break;
             case WAVE_IN:
-                getMyoData().setGesture(getParentActivity().getString(R.string.pose_wavein));
-                textViewEditor.setTextView(R.id.poseValue, R.string.pose_wavein);
+                getMyoData().setGesture(getParentActivity().getString(R.string.myo_data_pose_wavein));
+                textViewEditor.setTextView(R.id.poseValue, R.string.myo_data_pose_wavein);
                 break;
             case WAVE_OUT:
-                getMyoData().setGesture(getParentActivity().getString(R.string.pose_waveout));
-                textViewEditor.setTextView(R.id.poseValue, R.string.pose_fingersspread);
+                getMyoData().setGesture(getParentActivity().getString(R.string.myo_data_pose_waveout));
+                textViewEditor.setTextView(R.id.poseValue, R.string.myo_data_pose_fingersspread);
                 break;
             case FINGERS_SPREAD:
-                getMyoData().setGesture(getParentActivity().getString(R.string.pose_fingersspread));
-                textViewEditor.setTextView(R.id.poseValue, R.string.pose_fingersspread);
+                getMyoData().setGesture(getParentActivity().getString(R.string.myo_data_pose_fingersspread));
+                textViewEditor.setTextView(R.id.poseValue, R.string.myo_data_pose_fingersspread);
                 setGestureStartTime(timestamp);
                 break;
         }

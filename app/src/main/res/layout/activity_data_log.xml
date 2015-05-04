@@ -3,401 +3,401 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:columnWidth="90dp"
+    android:columnWidth="@dimen/grid_column_width"
     android:numColumns="auto_fit"
-    android:verticalSpacing="10dp"
-    android:horizontalSpacing="10dp"
+    android:verticalSpacing="@dimen/spacing_small"
+    android:horizontalSpacing="@dimen/spacing_small"
     android:stretchMode="columnWidth"
     android:gravity="center"
     android:keepScreenOn="true"
-    tools:context="com.rad.myobaxter.DataLogActivity"
+    tools:context="com.rad.myobaxter.activities.DataLogActivity"
     tools:ignore="MergeRootFrame">
 
     <TextView
+        android:id="@+id/lock_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/lock_state"
-        android:text="@string/lock_state"
-        android:textSize="20dp"
+        android:text="@string/myo.data.lock_state"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="1"
         android:layout_column="0" />
 
     <TextView
+        android:id="@+id/locked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/locked"
-        android:text="@string/locked"
-        android:textSize="20dp"
+        android:text="@string/myo.data.locked"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="1"
         android:layout_column="1" />
 
     <TextView
+        android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/status"
-        android:text="@string/status"
-        android:textSize="20dp"
+        android:text="@string/myo.data.status"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="2"
         android:layout_column="0" />
 
     <TextView
+        android:id="@+id/connection_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/connection_status"
-        android:text="@string/disconnected"
-        android:textSize="20dp"
+        android:text="@string/myo.data.disconnected"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="2"
         android:layout_column="1" />
     
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/arm_synced"
-        android:text="@string/arm_synced"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.arm_synced"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="3"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/sync_status"
-        android:text="@string/unsynced"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.unsynced"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="3"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/gyroX"
-        android:text="@string/gyroX"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.gyroX"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="4"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/gyroXValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="4"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/gyroY"
-        android:text="@string/gyroY"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.gyroY"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="5"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/gyroYValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="5"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/gyroZ"
-        android:text="@string/gyroZ"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.gyroZ"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="6"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/gyroZValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="6"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/accelX"
-        android:text="@string/accelX"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.accelX"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="7"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/accelXValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="7"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/accelY"
-        android:text="@string/accelY"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.accelY"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="8"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/accelYValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="8"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/accelZ"
-        android:text="@string/accelZ"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.accelZ"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="9"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/accelZValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="9"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/roll"
-        android:text="@string/roll"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.roll"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="10"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/rollValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="10"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/pitch"
-        android:text="@string/pitch"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.pitch"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="11"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/pitchValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="11"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/yaw"
-        android:text="@string/yaw"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.yaw"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="12"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/yawValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="12"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/pose"
-        android:text="@string/pose"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.pose"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="13"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/poseValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="None"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="13"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/velocityX"
-        android:text="@string/velocityX"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.velocityX"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="14"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/velocityXValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="14"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/velocityY"
-        android:text="@string/velocityY"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.velocityY"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="15"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/velocityYValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="15"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/velocityZ"
-        android:text="@string/velocityZ"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.velocityZ"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="16"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/velocityZValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="16"
         android:layout_column="1" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/positionX"
-        android:text="@string/positionX"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.data.positionX"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="17"
         android:layout_column="0" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/positionXValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="17"
         android:layout_column="1" />
 
     <TextView
+        android:id="@+id/positionY"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/positionY"
-        android:text="@string/positionY"
-        android:textSize="20dp"
+        android:text="@string/myo.data.positionY"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="18"
         android:layout_column="0" />
 
     <TextView
+        android:id="@+id/positionYValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/positionYValue"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="18"
         android:layout_column="1" />
 
     <TextView
+        android:id="@+id/positionZ"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/positionZ"
-        android:text="@string/positionZ"
-        android:textSize="20dp"
+        android:text="@string/myo.data.positionZ"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="19"
         android:layout_column="0" />
 
     <TextView
+        android:id="@+id/positionZValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/positionZValue"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
         android:layout_row="19"
         android:layout_column="1" />
 
     <Button
+        android:id="@+id/resetSensorsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/resetSensorsButton"
-        android:text="@string/reset_sensors"
+        android:text="@string/myo.command.reset_sensors"
         android:onClick="calibrateSensors"
         android:layout_row="20"
         android:layout_column="0"/>
