@@ -1,13 +1,8 @@
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:columnWidth="@dimen/grid_column_width"
-    android:numColumns="auto_fit"
-    android:verticalSpacing="@dimen/spacing_small"
-    android:horizontalSpacing="@dimen/spacing_small"
-    android:stretchMode="columnWidth"
     android:gravity="center"
     android:keepScreenOn="true"
     tools:context="com.rad.myobaxter.activities.DataLogActivity"
@@ -20,8 +15,10 @@
         android:text="@string/myo.data.lock_state"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="1"
-        android:layout_column="0" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/locked"
@@ -30,8 +27,9 @@
         android:text="@string/myo.data.locked"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="1"
-        android:layout_column="1" />
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@id/lock_state"
+        />
 
     <TextView
         android:id="@+id/status"
@@ -40,8 +38,10 @@
         android:text="@string/myo.data.status"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="2"
-        android:layout_column="0" />
+        android:layout_below="@id/lock_state"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/connection_status"
@@ -50,8 +50,9 @@
         android:text="@string/myo.data.disconnected"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="2"
-        android:layout_column="1" />
+        android:layout_below="@id/lock_state"
+        android:layout_toEndOf="@id/status"
+        />
     
     <TextView
         android:id="@+id/arm_synced"
@@ -60,8 +61,10 @@
         android:text="@string/myo.data.arm_synced"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="3"
-        android:layout_column="0" />
+        android:layout_below="@id/status"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/sync_status"
@@ -70,8 +73,9 @@
         android:text="@string/myo.data.unsynced"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="3"
-        android:layout_column="1" />
+        android:layout_below="@id/status"
+        android:layout_toEndOf="@id/arm_synced"
+        />
 
     <TextView
         android:id="@+id/gyroX"
@@ -80,8 +84,10 @@
         android:text="@string/myo.data.gyroX"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="4"
-        android:layout_column="0" />
+        android:layout_below="@id/arm_synced"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/gyroXValue"
@@ -90,8 +96,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="4"
-        android:layout_column="1" />
+        android:layout_below="@id/arm_synced"
+        android:layout_toEndOf="@id/gyroX"
+        />
 
     <TextView
         android:id="@+id/gyroY"
@@ -100,8 +107,10 @@
         android:text="@string/myo.data.gyroY"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="5"
-        android:layout_column="0" />
+        android:layout_below="@id/gyroX"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/gyroYValue"
@@ -110,8 +119,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="5"
-        android:layout_column="1" />
+        android:layout_below="@id/gyroX"
+        android:layout_toEndOf="@id/gyroY"
+        />
 
     <TextView
         android:id="@+id/gyroZ"
@@ -120,8 +130,10 @@
         android:text="@string/myo.data.gyroZ"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="6"
-        android:layout_column="0" />
+        android:layout_below="@id/gyroY"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/gyroZValue"
@@ -130,8 +142,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="6"
-        android:layout_column="1" />
+        android:layout_below="@id/gyroY"
+        android:layout_toEndOf="@id/gyroZ"
+        />
 
     <TextView
         android:id="@+id/accelX"
@@ -140,8 +153,10 @@
         android:text="@string/myo.data.accelX"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="7"
-        android:layout_column="0" />
+        android:layout_below="@id/gyroZ"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/accelXValue"
@@ -150,8 +165,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="7"
-        android:layout_column="1" />
+        android:layout_below="@id/gyroZ"
+        android:layout_toEndOf="@id/accelX"
+        />
 
     <TextView
         android:id="@+id/accelY"
@@ -160,8 +176,10 @@
         android:text="@string/myo.data.accelY"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="8"
-        android:layout_column="0" />
+        android:layout_below="@id/accelX"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/accelYValue"
@@ -170,8 +188,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="8"
-        android:layout_column="1" />
+        android:layout_below="@id/accelX"
+        android:layout_toEndOf="@id/accelY"
+        />
 
     <TextView
         android:id="@+id/accelZ"
@@ -180,8 +199,10 @@
         android:text="@string/myo.data.accelZ"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="9"
-        android:layout_column="0" />
+        android:layout_below="@id/accelY"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/accelZValue"
@@ -190,8 +211,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="9"
-        android:layout_column="1" />
+        android:layout_below="@id/accelY"
+        android:layout_toEndOf="@id/accelZ"
+        />
 
     <TextView
         android:id="@+id/roll"
@@ -200,8 +222,10 @@
         android:text="@string/myo.data.roll"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="10"
-        android:layout_column="0" />
+        android:layout_below="@id/accelZ"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/rollValue"
@@ -210,8 +234,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="10"
-        android:layout_column="1" />
+        android:layout_below="@id/accelZ"
+        android:layout_toEndOf="@id/roll"
+        />
 
     <TextView
         android:id="@+id/pitch"
@@ -220,8 +245,10 @@
         android:text="@string/myo.data.pitch"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="11"
-        android:layout_column="0" />
+        android:layout_below="@id/roll"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/pitchValue"
@@ -230,8 +257,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="11"
-        android:layout_column="1" />
+        android:layout_below="@id/roll"
+        android:layout_toEndOf="@id/pitch"
+        />
 
     <TextView
         android:id="@+id/yaw"
@@ -240,8 +268,10 @@
         android:text="@string/myo.data.yaw"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="12"
-        android:layout_column="0" />
+        android:layout_below="@id/pitch"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/yawValue"
@@ -250,8 +280,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="12"
-        android:layout_column="1" />
+        android:layout_below="@id/pitch"
+        android:layout_toEndOf="@id/yaw"
+        />
 
     <TextView
         android:id="@+id/pose"
@@ -260,8 +291,10 @@
         android:text="@string/myo.data.pose"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="13"
-        android:layout_column="0" />
+        android:layout_below="@id/yaw"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/poseValue"
@@ -270,8 +303,9 @@
         android:text="None"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="13"
-        android:layout_column="1" />
+        android:layout_below="@id/yaw"
+        android:layout_toEndOf="@id/pose"
+        />
 
     <TextView
         android:id="@+id/velocityX"
@@ -280,8 +314,10 @@
         android:text="@string/myo.data.velocityX"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="14"
-        android:layout_column="0" />
+        android:layout_below="@id/pose"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/velocityXValue"
@@ -290,8 +326,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="14"
-        android:layout_column="1" />
+        android:layout_below="@id/pose"
+        android:layout_toEndOf="@id/velocityX"
+        />
 
     <TextView
         android:id="@+id/velocityY"
@@ -300,8 +337,10 @@
         android:text="@string/myo.data.velocityY"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="15"
-        android:layout_column="0" />
+        android:layout_below="@id/velocityX"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/velocityYValue"
@@ -310,8 +349,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="15"
-        android:layout_column="1" />
+        android:layout_below="@id/velocityX"
+        android:layout_toEndOf="@id/velocityY"
+        />
 
     <TextView
         android:id="@+id/velocityZ"
@@ -320,8 +360,10 @@
         android:text="@string/myo.data.velocityZ"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="16"
-        android:layout_column="0" />
+        android:layout_below="@id/velocityY"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/velocityZValue"
@@ -330,8 +372,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="16"
-        android:layout_column="1" />
+        android:layout_below="@id/velocityY"
+        android:layout_toEndOf="@id/velocityZ"
+        />
 
     <TextView
         android:id="@+id/positionX"
@@ -340,8 +383,10 @@
         android:text="@string/myo.data.positionX"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="17"
-        android:layout_column="0" />
+        android:layout_below="@id/velocityZ"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/positionXValue"
@@ -350,8 +395,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="17"
-        android:layout_column="1" />
+        android:layout_below="@id/velocityZ"
+        android:layout_toEndOf="@id/positionX"
+        />
 
     <TextView
         android:id="@+id/positionY"
@@ -360,8 +406,10 @@
         android:text="@string/myo.data.positionY"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="18"
-        android:layout_column="0" />
+        android:layout_below="@id/positionX"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/positionYValue"
@@ -370,8 +418,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="18"
-        android:layout_column="1" />
+        android:layout_below="@id/positionX"
+        android:layout_toEndOf="@id/positionY"
+        />
 
     <TextView
         android:id="@+id/positionZ"
@@ -380,8 +429,10 @@
         android:text="@string/myo.data.positionZ"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="19"
-        android:layout_column="0" />
+        android:layout_below="@id/positionY"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/data_layout_margin_small"
+        />
 
     <TextView
         android:id="@+id/positionZValue"
@@ -390,8 +441,9 @@
         android:text="0"
         android:textSize="@dimen/font_normal"
         tools:ignore="SpUsage"
-        android:layout_row="19"
-        android:layout_column="1" />
+        android:layout_below="@id/positionY"
+        android:layout_toEndOf="@id/positionZ"
+        />
 
     <Button
         android:id="@+id/resetSensorsButton"
@@ -399,6 +451,7 @@
         android:layout_height="wrap_content"
         android:text="@string/myo.command.reset_sensors"
         android:onClick="calibrateSensors"
-        android:layout_row="20"
-        android:layout_column="0"/>
-</GridLayout>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        />
+</RelativeLayout>
