@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MyoData {
+    private final String GRIPPER_GESTURE = "Fist";
     private int myoId = 0;
     private GyroData gyroData;
     private OrientationData orientationData;
@@ -51,5 +52,9 @@ public class MyoData {
         accelerometerData.calibrate();
         gyroData.calibrate();
         orientationData.calibrate();
+    }
+
+    public void sendGripperSignal() {
+        setGesture(GRIPPER_GESTURE);
     }
 }

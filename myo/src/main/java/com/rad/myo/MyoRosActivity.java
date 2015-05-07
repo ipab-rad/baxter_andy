@@ -122,6 +122,14 @@ public abstract class MyoRosActivity extends RosActivity {
         myoData.calibrateSensors();
     }
 
+    public void toggleEnable(View view){
+        myoData.toggleEnable();
+    }
+
+    public void sendGripperSignal(View view){
+        myoData.sendGripperSignal();
+    }
+
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
         initNode(nodeMainExecutor, myoPublisherNode);

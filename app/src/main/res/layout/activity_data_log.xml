@@ -454,4 +454,24 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         />
+    <!--TODO change text of button on enable or disable and for grip or ungrip-->
+    <Button
+        android:id="@+id/enableButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.command.enable"
+        android:onClick="toggleEnable"
+        android:layout_toEndOf="@+id/resetSensorsButton"
+        android:layout_alignParentBottom="true"
+        />
+    <Button
+        android:id="@+id/gripperButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myo.command.grip"
+        android:onClick="sendGripperSignal"
+        android:layout_toEndOf="@+id/enableButton"
+        android:layout_alignParentBottom="true"
+        />
+
 </RelativeLayout>
