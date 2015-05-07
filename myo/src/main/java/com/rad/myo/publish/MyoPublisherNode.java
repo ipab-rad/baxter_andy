@@ -34,11 +34,11 @@ public class MyoPublisherNode extends AbstractNodeMain implements PublisherNode 
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        orientationPublisher = connectedNode.newPublisher(GraphName.of("orientation_myo_"+myoData.getMyoId()), Vector3._TYPE);
-        positionPublisher = connectedNode.newPublisher(GraphName.of("position_myo_"+myoData.getMyoId()), Vector3._TYPE);
-        enablePublisher = connectedNode.newPublisher(GraphName.of("enabled_myo_"+myoData.getMyoId()), Bool._TYPE);
-        calibratePublisher = connectedNode.newPublisher(GraphName.of("calibrated_myo_"+myoData.getMyoId()), Bool._TYPE);
-        gesturePublisher = connectedNode.newPublisher(GraphName.of("calibrated_myo_"+myoData.getMyoId()), std_msgs.String._TYPE);
+        orientationPublisher = connectedNode.newPublisher(GraphName.of("myo_"+myoData.getMyoId()+"/orientation"), Vector3._TYPE);
+        positionPublisher = connectedNode.newPublisher(GraphName.of("myo_"+myoData.getMyoId()+"/position"), Vector3._TYPE);
+        enablePublisher = connectedNode.newPublisher(GraphName.of("myo_"+myoData.getMyoId()+"/enabled"), Bool._TYPE);
+        calibratePublisher = connectedNode.newPublisher(GraphName.of("myo_"+myoData.getMyoId()+"/calibrated"), Bool._TYPE);
+        gesturePublisher = connectedNode.newPublisher(GraphName.of("myo_"+myoData.getMyoId()+"/gesture"), std_msgs.String._TYPE);
 
         final CancellableLoop loop = new CancellableLoop() {
             @Override
