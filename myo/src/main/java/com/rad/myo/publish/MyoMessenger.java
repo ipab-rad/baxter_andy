@@ -15,9 +15,7 @@ import std_msgs.Bool;
 
 public class MyoMessenger {
     public static void sendMessage(String tag, int myoId, String message, Publisher<std_msgs.String> publisher){
-        message = myoId + ":" + message;
         Log.i(tag, message);
-
         try {
             MessagePublisher.publishString(publisher, message);
         } catch (ClassCastException e) {
