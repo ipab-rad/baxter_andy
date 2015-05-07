@@ -63,7 +63,7 @@ public class MyoDataLogListener extends DefaultMyoListener {
 
     @Override
     public void onPose(Myo myo, long timestamp, Pose pose) {
-        toggleEnableOnHeldFingerSpreadPose(myo, timestamp);
+        toggleEnableOnHeldFingerSpreadPose(timestamp);
         switch (pose) {
             case UNKNOWN:
                 textViewEditor.setTextView(R.id.poseValue, R.string.myo_data_unknown);

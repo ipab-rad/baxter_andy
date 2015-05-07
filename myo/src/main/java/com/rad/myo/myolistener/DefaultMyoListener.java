@@ -126,7 +126,7 @@ public class DefaultMyoListener extends AbstractDeviceListener {
         myoData.getGyroData().offsetGyro();
     }
 
-    public void toggleEnableOnHeldFingerSpreadPose(Myo myo, long timestamp) {
+    public void toggleEnableOnHeldFingerSpreadPose(long timestamp) {
         if(isTimerInProgress()){
             if(!timerLessThanThreshold(timestamp, GESTURE_HOLD_THRESHOLD)) {
                 myoData.toggleEnable();
