@@ -22,7 +22,7 @@ allprojects {
             url 'https://raw.githubusercontent.com/ipab-rad/myo_android_ros/master/releases'
         }
         maven {
-            url 'https://raw.githubusercontent.com/ipab-rad/rosjava_wrapper/master'
+            url 'https://raw.githubusercontent.com/ipab-rad/rosjava_wrapper/master/releases'
         }
         maven {
             name "rosjava-github"
