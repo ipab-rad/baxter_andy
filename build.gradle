@@ -25,6 +25,9 @@ allprojects {
             url 'https://raw.githubusercontent.com/ipab-rad/rosjava_wrapper/master/releases'
         }
         maven {
+            url 'https://raw.githubusercontent.com/ipab-rad/rad_utils/master/releases'
+        }
+        maven {
             name "rosjava-github"
             url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
         }
