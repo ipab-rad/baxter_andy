@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.rad.myo.MyoRosActivity;
 import com.rad.myobaxter.R;
 import com.rad.myobaxter.myolistener.MyoHelloWorldListener;
-import com.rad.rosjava.publish.SimplePublisherNode;
+import com.rad.rosjava_wrapper.publish.TimePublisherNode;
 
 import org.ros.node.NodeMainExecutor;
 
@@ -13,7 +13,7 @@ public class HelloWorldActivity extends MyoRosActivity {
     public static final String TAG = "HelloWorldActivity";
 
     public HelloWorldActivity() {
-        super("MyoBaxterHellowWorld");
+        super("MyoBaxterHelloWorld");
         setMyoListener(new MyoHelloWorldListener(this));
     }
 
@@ -25,6 +25,6 @@ public class HelloWorldActivity extends MyoRosActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
-        initNode(nodeMainExecutor, new SimplePublisherNode());
+        initNode(nodeMainExecutor, new TimePublisherNode());
     }
 }

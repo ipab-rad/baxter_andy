@@ -20,7 +20,7 @@ import static org.robolectric.shadows.ShadowView.clickOn;
 
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class MenuActivityTest {
 
     private MenuActivity menuActivity;

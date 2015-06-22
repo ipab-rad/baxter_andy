@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="reset">Myo Calibrated</string>
-    <string name="not_enough_samples">Not enough samples to calibrate</string>
-    <string name="scan">Scan</string>
-    <string name="app_name">MyoRos</string>
-    <string name="myo.command.enable">enable</string>
-    <string name="myo.command.disable">disable</string>
-</resources>
