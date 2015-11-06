@@ -34,8 +34,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':myo')
     compile 'com.rad:rosjava_wrapper:0.1-alpha'
-    compile 'com.rad:myo:0.1-alpha'
+//    compile 'com.rad:myo:0.1-alpha'
     compile 'com.rad:math:0.1'
     compile 'com.thalmic:myosdk:0.10.0@aar'
     compile ('org.ros.android_core:android_15:0.2.0') {
