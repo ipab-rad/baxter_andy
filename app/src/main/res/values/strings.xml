@@ -4,6 +4,7 @@
     <string name="app_name">Myo Baxter</string>
     <string name="title.hello_world">Hello World!</string>
     <string name="title.data_log">Data Log</string>
+    <string name="title.topic">Namespace Selection</string>
 
     <string name="myo.data.pose_fist">Fist</string>
     <string name="myo.data.pose_wavein">Wave In</string>
@@ -43,5 +44,8 @@
     <string name="myo.command.enable">Enable</string>
     <string name="myo.command.disable">Disable</string>
     <string name="myo.command.grip">Grip</string>
+    <string name="myo.command.topic_zero">myo_0</string>
+    <string name="myo.command.topic_one">myo_1</string>
+
 
 </resources>

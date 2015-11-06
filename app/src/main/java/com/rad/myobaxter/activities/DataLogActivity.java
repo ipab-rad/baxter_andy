@@ -18,6 +18,9 @@ public class DataLogActivity extends MyoRosActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle b = getIntent().getExtras();
+
+        this.getMyoData().setMyoId(b.getInt("myo_id")); // Edit to change the topic name
         setContentView(R.layout.activity_data_log);
     }
 }

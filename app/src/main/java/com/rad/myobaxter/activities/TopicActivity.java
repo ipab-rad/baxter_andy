@@ -9,15 +9,15 @@ import android.widget.Button;
 import com.rad.myobaxter.R;
 
 
-public class MenuActivity extends Activity implements View.OnClickListener {
+public class TopicActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu);
+        setContentView(R.layout.activity_topic);
 
-        setUpButton(R.id.hello_world_button);
-        setUpButton(R.id.data_log_button);
+        setUpButton(R.id.topic_zero_button);
+        setUpButton(R.id.topic_one_button);
     }
 
     private void setUpButton(int buttonId) {
@@ -27,14 +27,18 @@ public class MenuActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(TopicActivity.this, DataLogActivity.class);
+        Bundle b = new Bundle();
         switch(v.getId()){
-            case R.id.hello_world_button:
-                startActivity(new Intent(MenuActivity.this, HelloWorldActivity.class));
+            case R.id.topic_one_button:
+                b.putInt("myo_id", 1);
                 break;
-            case R.id.data_log_button:
-                startActivity(new Intent(MenuActivity.this, TopicActivity.class));
+            case R.id.topic_zero_button:
+                b.putInt("myo_id", 0);
                 break;
         }
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     @Override
@@ -42,3 +46,4 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         super.onDestroy();
     }
 }
+

@@ -1,4 +1,6 @@
 <resources>
     <item name="data_log_button" type="id" />
     <item name="hello_world_button" type="id" />
+    <item name="topic_zero_button" type="id" />
+    <item name="topic_one_button" type="id" />
 </resources>

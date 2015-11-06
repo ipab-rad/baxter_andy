@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/menu_container"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:gravity="center"
+tools:context="com.rad.myobaxter.activities.MenuActivity"
+tools:ignore="MergeRootFrame">
+
+<Button
+    android:id="@id/topic_zero_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/myo.command.topic_zero" />
+
+<Button
+    android:id="@id/topic_one_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/myo.command.topic_one" />
+
+</LinearLayout>
